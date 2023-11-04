@@ -1,0 +1,8 @@
+{
+  "DatabaseSettings": {
+    "DBProvider": "mssql",
+    //"ConnectionString": "Host=localhost;Port=5432;Database=fshDb;Username=postgres;Password=admin;Include Error Detail=true"
+
+    "ConnectionString": "Server=10.207.252.67;Database=ArchiveSphere_Publish_Development;User=sa;Password=123456789;MultipleActiveResultSets=true;trustServerCertificate=True;"
+  }
+}

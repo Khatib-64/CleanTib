@@ -1,0 +1,17 @@
+global using Ardalis.Specification;
+global using FluentValidation;
+global using CleanTib.Application.Common.Events;
+global using CleanTib.Application.Common.Exceptions;
+global using CleanTib.Application.Common.FileStorage;
+global using CleanTib.Application.Common.Interfaces;
+global using CleanTib.Application.Common.Models;
+global using CleanTib.Application.Common.Persistence;
+global using CleanTib.Application.Common.Specification;
+global using CleanTib.Application.Common.Validation;
+global using CleanTib.Domain.Catalog;
+global using CleanTib.Domain.Common;
+global using CleanTib.Domain.Common.Contracts;
+global using CleanTib.Shared.Notifications;
+global using MediatR;
+global using Microsoft.Extensions.Localization;
+global using Microsoft.Extensions.Logging;

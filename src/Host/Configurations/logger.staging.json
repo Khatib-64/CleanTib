@@ -1,0 +1,7 @@
+{
+  "LoggerSettings": {
+    "AppName": "CleanTib",
+    "WriteToFile": false,
+    "StructuredConsoleLogging": true
+  }
+}

@@ -20,8 +20,9 @@
       "WorkerCount": 5
     },
     "Storage": {
-      "StorageProvider": "postgresql",
-      "ConnectionString": "Host=localhost;Port=5432;Database=fshDb;Username=postgres;Password=admin;Include Error Detail=true",
+      "StorageProvider": "mssql",
+      //"ConnectionString": "Host=localhost;Port=5432;Database=fshDb;Username=postgres;Password=admin;Include Error Detail=true",
+      "ConnectionString": "Data Source=KHATIB\\SQLEXPRESS; Initial Catalog=CleanTibJobs; Trusted_Connection=True; MultipleActiveResultSets=true; TrustServerCertificate=True;",
       "Options": {
         "CommandBatchMaxTimeout": "00:05:00",
         "QueuePollInterval": "00:00:01",

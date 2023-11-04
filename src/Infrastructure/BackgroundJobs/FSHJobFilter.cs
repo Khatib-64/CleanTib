@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-using Finbuckle.MultiTenant;
 using CleanTib.Infrastructure.Common;
 using CleanTib.Shared.Multitenancy;
 using Hangfire.Client;
@@ -27,9 +26,6 @@ public class FSHJobFilter : IClientFilter
 
         var httpContext = scope.ServiceProvider.GetRequiredService<IHttpContextAccessor>()?.HttpContext;
         _ = httpContext ?? throw new InvalidOperationException("Can't create a TenantJob without HttpContext.");
-
-        var tenantInfo = scope.ServiceProvider.GetRequiredService<ITenantInfo>();
-        context.SetJobParameter(MultitenancyConstants.TenantIdName, tenantInfo);
 
         string? userId = httpContext.User.GetUserId();
         context.SetJobParameter(QueryStringKeys.UserId, userId);

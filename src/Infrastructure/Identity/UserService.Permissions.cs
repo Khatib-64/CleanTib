@@ -20,7 +20,7 @@ internal partial class UserService
             .ToListAsync(cancellationToken))
         {
             permissions.AddRange(await _db.RoleClaims
-                .Where(rc => rc.RoleId == role.Id && rc.ClaimType == FSHClaims.Permission)
+                .Where(rc => rc.RoleId.ToString() == role.Id && rc.ClaimType == FSHClaims.Permission)
                 .Select(rc => rc.ClaimValue!)
                 .ToListAsync(cancellationToken));
         }

@@ -1,4 +1,3 @@
-using Finbuckle.MultiTenant;
 using CleanTib.Application.Common.Events;
 using CleanTib.Application.Common.Interfaces;
 using CleanTib.Domain.Catalog;
@@ -10,8 +9,8 @@ namespace CleanTib.Infrastructure.Persistence.Context;
 
 public class ApplicationDbContext : BaseDbContext
 {
-    public ApplicationDbContext(ITenantInfo currentTenant, DbContextOptions options, ICurrentUser currentUser, ISerializerService serializer, IOptions<DatabaseSettings> dbSettings, IEventPublisher events)
-        : base(currentTenant, options, currentUser, serializer, dbSettings, events)
+    public ApplicationDbContext(DbContextOptions options, ICurrentUser currentUser, ISerializerService serializer, IOptions<DatabaseSettings> dbSettings, IEventPublisher events)
+        : base(options, currentUser, serializer, dbSettings, events)
     {
     }
 

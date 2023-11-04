@@ -41,12 +41,11 @@ public static class Startup
             .AddCaching(config)
             .AddCorsPolicy(config)
             .AddExceptionMiddleware()
-            .AddBehaviours(applicationAssembly)
+            .AddBehaviours()
             .AddHealthCheck()
             .AddPOLocalization(config)
             .AddMailing(config)
             .AddMediatR(Assembly.GetExecutingAssembly())
-            .AddMultitenancy()
             .AddNotifications(config)
             .AddOpenApiDocumentation(config)
             .AddPersistence()
@@ -64,7 +63,7 @@ public static class Startup
         });
 
     private static IServiceCollection AddHealthCheck(this IServiceCollection services) =>
-        services.AddHealthChecks().AddCheck<TenantHealthCheck>("Tenant").Services;
+        services.AddHealthChecks().Services;
 
     public static async Task InitializeDatabasesAsync(this IServiceProvider services, CancellationToken cancellationToken = default)
     {
@@ -86,7 +85,9 @@ public static class Startup
             .UseCorsPolicy()
             .UseAuthentication()
             .UseCurrentUser()
-            .UseMultiTenancy()
+
+            // .UseMultiTenancy()
+
             .UseAuthorization()
             .UseRequestLogging(config)
             .UseHangfireDashboard(config)

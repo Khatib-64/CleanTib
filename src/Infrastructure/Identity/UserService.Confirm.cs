@@ -1,7 +1,6 @@
 using System.Text;
 using CleanTib.Application.Common.Exceptions;
 using CleanTib.Infrastructure.Common;
-using CleanTib.Shared.Multitenancy;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,22 +10,17 @@ internal partial class UserService
 {
     private async Task<string> GetEmailVerificationUriAsync(ApplicationUser user, string origin)
     {
-        EnsureValidTenant();
-
         string code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
         code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
         const string route = "api/users/confirm-email/";
         var endpointUri = new Uri(string.Concat($"{origin}/", route));
         string verificationUri = QueryHelpers.AddQueryString(endpointUri.ToString(), QueryStringKeys.UserId, user.Id);
         verificationUri = QueryHelpers.AddQueryString(verificationUri, QueryStringKeys.Code, code);
-        verificationUri = QueryHelpers.AddQueryString(verificationUri, MultitenancyConstants.TenantIdName, _currentTenant.Id!);
         return verificationUri;
     }
 
     public async Task<string> ConfirmEmailAsync(string userId, string code, string tenant, CancellationToken cancellationToken)
     {
-        EnsureValidTenant();
-
         var user = await _userManager.Users
             .Where(u => u.Id == userId && !u.EmailConfirmed)
             .FirstOrDefaultAsync(cancellationToken);
@@ -43,8 +37,6 @@ internal partial class UserService
 
     public async Task<string> ConfirmPhoneNumberAsync(string userId, string code)
     {
-        EnsureValidTenant();
-
         var user = await _userManager.FindByIdAsync(userId);
 
         _ = user ?? throw new InternalServerException(_t["An error occurred while confirming Mobile Phone."]);

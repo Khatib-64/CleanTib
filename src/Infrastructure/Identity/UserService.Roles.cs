@@ -46,18 +46,17 @@ internal partial class UserService
             // Get count of users in Admin Role
             int adminCount = (await _userManager.GetUsersInRoleAsync(FSHRoles.Admin)).Count;
 
-            // Check if user is not Root Tenant Admin
-            // Edge Case : there are chances for other tenants to have users with the same email as that of Root Tenant Admin. Probably can add a check while User Registration
+            // Check if user is not Root Admin
             if (user.Email == MultitenancyConstants.Root.EmailAddress)
             {
-                if (_currentTenant.Id == MultitenancyConstants.Root.Id)
+                if (user.Id == MultitenancyConstants.Root.Id)
                 {
-                    throw new ConflictException(_t["Cannot Remove Admin Role From Root Tenant Admin."]);
+                    throw new ConflictException(_t["Cannot Remove Admin Role."]);
                 }
             }
             else if (adminCount <= 2)
             {
-                throw new ConflictException(_t["Tenant should have at least 2 Admins."]);
+                throw new ConflictException(_t["Application should have at least 2 Admins."]);
             }
         }
 

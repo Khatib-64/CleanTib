@@ -1,8 +1,5 @@
-﻿using Finbuckle.MultiTenant;
-using CleanTib.Infrastructure.Auth;
+﻿using CleanTib.Infrastructure.Auth;
 using CleanTib.Infrastructure.Common;
-using CleanTib.Infrastructure.Multitenancy;
-using CleanTib.Shared.Multitenancy;
 using Hangfire;
 using Hangfire.Server;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,16 +31,6 @@ public class FSHJobActivator : JobActivator
 
         private void ReceiveParameters()
         {
-            var tenantInfo = _context.GetJobParameter<FSHTenantInfo>(MultitenancyConstants.TenantIdName);
-            if (tenantInfo is not null)
-            {
-                _scope.ServiceProvider.GetRequiredService<IMultiTenantContextAccessor>()
-                    .MultiTenantContext = new MultiTenantContext<FSHTenantInfo>
-                    {
-                        TenantInfo = tenantInfo
-                    };
-            }
-
             string userId = _context.GetJobParameter<string>(QueryStringKeys.UserId);
             if (!string.IsNullOrEmpty(userId))
             {

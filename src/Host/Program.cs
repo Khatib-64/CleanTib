@@ -5,7 +5,6 @@ using CleanTib.Infrastructure;
 using CleanTib.Infrastructure.Common;
 using CleanTib.Infrastructure.Logging.Serilog;
 using Serilog;
-using Serilog.Formatting.Compact;
 
 [assembly: ApiConventionType(typeof(FSHApiConventions))]
 

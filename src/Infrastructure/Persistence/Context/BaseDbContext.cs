@@ -1,5 +1,4 @@
 using System.Data;
-using Finbuckle.MultiTenant;
 using CleanTib.Application.Common.Events;
 using CleanTib.Application.Common.Interfaces;
 using CleanTib.Domain.Common.Contracts;
@@ -12,15 +11,15 @@ using Microsoft.Extensions.Options;
 
 namespace CleanTib.Infrastructure.Persistence.Context;
 
-public abstract class BaseDbContext : MultiTenantIdentityDbContext<ApplicationUser, ApplicationRole, string, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, ApplicationRoleClaim, IdentityUserToken<string>>
+public abstract class BaseDbContext : DbContext
 {
     protected readonly ICurrentUser _currentUser;
     private readonly ISerializerService _serializer;
     private readonly DatabaseSettings _dbSettings;
     private readonly IEventPublisher _events;
 
-    protected BaseDbContext(ITenantInfo currentTenant, DbContextOptions options, ICurrentUser currentUser, ISerializerService serializer, IOptions<DatabaseSettings> dbSettings, IEventPublisher events)
-        : base(currentTenant, options)
+    protected BaseDbContext(DbContextOptions options, ICurrentUser currentUser, ISerializerService serializer, IOptions<DatabaseSettings> dbSettings, IEventPublisher events)
+        : base(options)
     {
         _currentUser = currentUser;
         _serializer = serializer;
@@ -32,6 +31,12 @@ public abstract class BaseDbContext : MultiTenantIdentityDbContext<ApplicationUs
     public IDbConnection Connection => Database.GetDbConnection();
 
     public DbSet<Trail> AuditTrails => Set<Trail>();
+    public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
+    public DbSet<ApplicationRole> Roles => Set<ApplicationRole>();
+    public DbSet<ApplicationRoleClaim> RoleClaims => Set<ApplicationRoleClaim>();
+    public DbSet<IdentityUserClaim<string>> IdentityUserClaims => Set<IdentityUserClaim<string>>();
+    public DbSet<IdentityUserLogin<string>> UserLogins => Set<IdentityUserLogin<string>>();
+    public DbSet<IdentityUserToken<string>> IdentityUserTokens => Set<IdentityUserToken<string>>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -56,10 +61,7 @@ public abstract class BaseDbContext : MultiTenantIdentityDbContext<ApplicationUs
         // Or uncomment the next line if you want to see them in the console
         // optionsBuilder.LogTo(Console.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
 
-        if (!string.IsNullOrWhiteSpace(TenantInfo?.ConnectionString))
-        {
-            optionsBuilder.UseDatabase(_dbSettings.DBProvider, TenantInfo.ConnectionString);
-        }
+        optionsBuilder.UseDatabase(_dbSettings.DBProvider, _dbSettings.ConnectionString);
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())

@@ -86,6 +86,7 @@ internal static class Startup
 
                 document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
                 document.OperationProcessors.Add(new SwaggerGlobalAuthProcessor());
+                //document.OperationProcessors.Add(new DefaultValuesOperationProcessor());
 
                 document.TypeMappers.Add(new PrimitiveTypeMapper(typeof(TimeSpan), schema =>
                 {
@@ -119,7 +120,7 @@ internal static class Startup
                 {
                     options.OAuth2Client = new OAuth2ClientSettings
                     {
-                        AppName = "Full Stack Hero Api Client",
+                        AppName = "CleanTib Api Client",
                         ClientId = config["SecuritySettings:Swagger:OpenIdClientId"],
                         ClientSecret = string.Empty,
                         UsePkceWithAuthorizationCodeGrant = true,

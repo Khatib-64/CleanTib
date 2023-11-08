@@ -1,3 +1,4 @@
+using CleanTib.Infrastructure.Identity.Entities;
 using CleanTib.Infrastructure.Persistence.Context;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;

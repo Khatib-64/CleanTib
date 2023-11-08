@@ -19,9 +19,9 @@ public class CreateBrandRequestValidator : CustomValidator<CreateBrandRequest>
 public class CreateBrandRequestHandler : IRequestHandler<CreateBrandRequest, Guid>
 {
     // Add Domain Events automatically by using IRepositoryWithEvents
-    private readonly IRepositoryWithEvents<Brand> _repository;
+    private readonly IRepository<Brand> _repository;
 
-    public CreateBrandRequestHandler(IRepositoryWithEvents<Brand> repository) => _repository = repository;
+    public CreateBrandRequestHandler(IRepository<Brand> repository) => _repository = repository;
 
     public async Task<Guid> Handle(CreateBrandRequest request, CancellationToken cancellationToken)
     {

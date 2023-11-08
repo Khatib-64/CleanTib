@@ -11,6 +11,7 @@ using CleanTib.Application.Common.Specification;
 using CleanTib.Application.Identity.Users;
 using CleanTib.Domain.Identity;
 using CleanTib.Infrastructure.Auth;
+using CleanTib.Infrastructure.Identity.Entities;
 using CleanTib.Infrastructure.Persistence.Context;
 using CleanTib.Shared.Authorization;
 using Mapster;

@@ -22,12 +22,12 @@ public class NotificationSender : INotificationSender
 
     public Task SendToAllAsync(INotificationMessage notification, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.FromResult("SendToAllAsync");
     }
 
     public Task SendToAllAsync(INotificationMessage notification, IEnumerable<string> excludedConnectionIds, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        return Task.FromResult("SendToAllAsync");
     }
 
     //public Task SendToAllAsync(INotificationMessage notification, CancellationToken cancellationTo3ken) =>

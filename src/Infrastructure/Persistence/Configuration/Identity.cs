@@ -1,4 +1,4 @@
-﻿using CleanTib.Infrastructure.Identity;
+﻿using CleanTib.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -25,37 +25,37 @@ public class ApplicationRoleConfig : IEntityTypeConfiguration<ApplicationRole>
             .ToTable("Roles", SchemaNames.Identity);
 }
 
-public class ApplicationRoleClaimConfig : IEntityTypeConfiguration<ApplicationRoleClaim>
+public class RoleClaimConfig : IEntityTypeConfiguration<RoleClaim>
 {
-    public void Configure(EntityTypeBuilder<ApplicationRoleClaim> builder) =>
+    public void Configure(EntityTypeBuilder<RoleClaim> builder) =>
         builder
             .ToTable("RoleClaims", SchemaNames.Identity);
 }
 
-public class IdentityUserRoleConfig : IEntityTypeConfiguration<IdentityUserRole<string>>
+public class IdentityUserRoleConfig : IEntityTypeConfiguration<UserRole>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder) =>
+    public void Configure(EntityTypeBuilder<UserRole> builder) =>
         builder
             .ToTable("UserRoles", SchemaNames.Identity);
 }
 
-public class IdentityUserClaimConfig : IEntityTypeConfiguration<IdentityUserClaim<string>>
+public class IdentityUserClaimConfig : IEntityTypeConfiguration<UserClaim>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserClaim<string>> builder) =>
+    public void Configure(EntityTypeBuilder<UserClaim> builder) =>
         builder
             .ToTable("UserClaims", SchemaNames.Identity);
 }
 
-public class IdentityUserLoginConfig : IEntityTypeConfiguration<IdentityUserLogin<string>>
+public class IdentityUserLoginConfig : IEntityTypeConfiguration<UserLogin>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserLogin<string>> builder) =>
+    public void Configure(EntityTypeBuilder<UserLogin> builder) =>
         builder
             .ToTable("UserLogins", SchemaNames.Identity);
 }
 
-public class IdentityUserTokenConfig : IEntityTypeConfiguration<IdentityUserToken<string>>
+public class IdentityUserTokenConfig : IEntityTypeConfiguration<UserToken>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserToken<string>> builder) =>
+    public void Configure(EntityTypeBuilder<UserToken> builder) =>
         builder
             .ToTable("UserTokens", SchemaNames.Identity);
 }

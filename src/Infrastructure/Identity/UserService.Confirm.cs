@@ -1,6 +1,7 @@
 using System.Text;
 using CleanTib.Application.Common.Exceptions;
 using CleanTib.Infrastructure.Common;
+using CleanTib.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 

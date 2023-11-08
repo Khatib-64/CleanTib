@@ -6,6 +6,7 @@ using CleanTib.Application.Common.Exceptions;
 using CleanTib.Application.Identity.Tokens;
 using CleanTib.Infrastructure.Auth;
 using CleanTib.Infrastructure.Auth.Jwt;
+using CleanTib.Infrastructure.Identity.Entities;
 using CleanTib.Shared.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Localization;

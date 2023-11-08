@@ -4,6 +4,7 @@ using CleanTib.Application.Common.Mailing;
 using CleanTib.Application.Identity.Users;
 using CleanTib.Domain.Common;
 using CleanTib.Domain.Identity;
+using CleanTib.Infrastructure.Identity.Entities;
 using CleanTib.Shared.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

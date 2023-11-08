@@ -4,9 +4,12 @@ namespace CleanTib.Infrastructure.Caching;
 
 public class CacheKeyService : ICacheKeyService
 {
-    // TODO: Remove this CacheKeyService
-    public string GetCacheKey(string name, object id, bool includeTenantId = true)
+    public CacheKeyService()
     {
-        return null;
+    }
+
+    public string GetCacheKey(string name, object id)
+    {
+        return $"{name}-{id}";
     }
 }

@@ -3,6 +3,7 @@ using CleanTib.Application.Common.Exceptions;
 using CleanTib.Application.Common.Interfaces;
 using CleanTib.Application.Identity.Roles;
 using CleanTib.Domain.Identity;
+using CleanTib.Infrastructure.Identity.Entities;
 using CleanTib.Infrastructure.Persistence.Context;
 using CleanTib.Shared.Authorization;
 using Mapster;
@@ -137,7 +138,7 @@ internal class RoleService : IRoleService
         {
             if (!string.IsNullOrEmpty(permission))
             {
-                _db.RoleClaims.Add(new ApplicationRoleClaim
+                _db.RoleClaims.Add(new RoleClaim
                 {
                     RoleId = role.Id,
                     ClaimType = FSHClaims.Permission,

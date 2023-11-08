@@ -3,26 +3,35 @@ using CleanTib.Application.Common.Events;
 using CleanTib.Application.Common.Interfaces;
 using CleanTib.Domain.Common.Contracts;
 using CleanTib.Infrastructure.Auditing;
-using CleanTib.Infrastructure.Identity;
+using CleanTib.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.Extensions.Options;
 
 namespace CleanTib.Infrastructure.Persistence.Context;
 
-public abstract class BaseDbContext : DbContext
+public abstract class BaseDbContext : IdentityDbContext<
+    ApplicationUser,
+    ApplicationRole,
+    string,
+    UserClaim,
+    UserRole,
+    UserLogin,
+    RoleClaim,
+    UserToken>
 {
     protected readonly ICurrentUser _currentUser;
-    private readonly ISerializerService _serializer;
+    private readonly ISerializerService _serialize;
     private readonly DatabaseSettings _dbSettings;
     private readonly IEventPublisher _events;
 
-    protected BaseDbContext(DbContextOptions options, ICurrentUser currentUser, ISerializerService serializer, IOptions<DatabaseSettings> dbSettings, IEventPublisher events)
+    protected BaseDbContext(DbContextOptions options, ICurrentUser currentUser, ISerializerService serialize, IOptions<DatabaseSettings> dbSettings, IEventPublisher events)
         : base(options)
     {
         _currentUser = currentUser;
-        _serializer = serializer;
+        _serialize = serialize;
         _dbSettings = dbSettings.Value;
         _events = events;
     }
@@ -31,12 +40,6 @@ public abstract class BaseDbContext : DbContext
     public IDbConnection Connection => Database.GetDbConnection();
 
     public DbSet<Trail> AuditTrails => Set<Trail>();
-    public DbSet<ApplicationUser> Users => Set<ApplicationUser>();
-    public DbSet<ApplicationRole> Roles => Set<ApplicationRole>();
-    public DbSet<ApplicationRoleClaim> RoleClaims => Set<ApplicationRoleClaim>();
-    public DbSet<IdentityUserClaim<string>> IdentityUserClaims => Set<IdentityUserClaim<string>>();
-    public DbSet<IdentityUserLogin<string>> UserLogins => Set<IdentityUserLogin<string>>();
-    public DbSet<IdentityUserToken<string>> IdentityUserTokens => Set<IdentityUserToken<string>>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -112,7 +115,7 @@ public abstract class BaseDbContext : DbContext
             .Where(e => e.State is EntityState.Added or EntityState.Deleted or EntityState.Modified)
             .ToList())
         {
-            var trailEntry = new AuditTrail(entry, _serializer)
+            var trailEntry = new AuditTrail(entry, _serialize)
             {
                 TableName = entry.Entity.GetType().Name,
                 UserId = userId

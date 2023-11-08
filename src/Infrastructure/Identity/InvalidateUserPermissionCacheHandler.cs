@@ -1,6 +1,7 @@
 ﻿using CleanTib.Application.Common.Events;
 using CleanTib.Application.Identity.Users;
 using CleanTib.Domain.Identity;
+using CleanTib.Infrastructure.Identity.Entities;
 using Microsoft.AspNetCore.Identity;
 
 namespace CleanTib.Infrastructure.Identity;

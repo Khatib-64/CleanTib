@@ -1,4 +1,4 @@
-﻿using CleanTib.Infrastructure.Identity;
+﻿using CleanTib.Infrastructure.Identity.Entities;
 using CleanTib.Infrastructure.Persistence.Context;
 using CleanTib.Shared.Authorization;
 using CleanTib.Shared.Multitenancy;
@@ -64,7 +64,7 @@ internal class ApplicationDbSeeder
             if (!currentClaims.Any(c => c.Type == FSHClaims.Permission && c.Value == permission.Name))
             {
                 _logger.LogInformation("Seeding {role} Permission '{permission}'", role.Name, permission.Name);
-                dbContext.RoleClaims.Add(new ApplicationRoleClaim
+                dbContext.RoleClaims.Add(new RoleClaim
                 {
                     RoleId = role.Id,
                     ClaimType = FSHClaims.Permission,

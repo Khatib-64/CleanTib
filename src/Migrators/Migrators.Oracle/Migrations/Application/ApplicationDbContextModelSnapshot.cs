@@ -202,7 +202,7 @@ namespace Migrators.Oracle.Migrations.Application
                     b.HasAnnotation("Finbuckle:MultiTenant", true);
                 });
 
-            modelBuilder.Entity("CleanTib.Infrastructure.Identity.ApplicationRoleClaim", b =>
+            modelBuilder.Entity("CleanTib.Infrastructure.Identity.RoleClaim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -475,7 +475,7 @@ namespace Migrators.Oracle.Migrations.Application
                     b.Navigation("Brand");
                 });
 
-            modelBuilder.Entity("CleanTib.Infrastructure.Identity.ApplicationRoleClaim", b =>
+            modelBuilder.Entity("CleanTib.Infrastructure.Identity.RoleClaim", b =>
                 {
                     b.HasOne("CleanTib.Infrastructure.Identity.ApplicationRole", null)
                         .WithMany()

@@ -39,7 +39,8 @@
         <PackageReference Include="Microsoft.Identity.Web" Version="2.7.0" />
         <PackageReference Include="MimeKit" Version="3.6.1" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.3" />
-        <PackageReference Include="NSwag.AspNetCore" Version="13.18.2" />
+        <PackageReference Include="NSwag.AspNetCore" Version="13.19.0" />
+        <PackageReference Include="NSwag.Examples" Version="1.0.11" />
         <PackageReference Include="RazorEngineCore" Version="2022.8.1" />
         <PackageReference Include="ZymLabs.NSwag.FluentValidation.AspNetCore" Version="0.6.2" />
         <PackageReference Include="Oracle.EntityFrameworkCore" Version="7.21.9" />
@@ -75,4 +76,5 @@
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
     </ItemGroup>
+
 </Project>

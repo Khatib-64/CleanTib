@@ -6,7 +6,9 @@ using Microsoft.Extensions.Logging;
 using NJsonSchema.Generation.TypeMappers;
 using NSwag;
 using NSwag.AspNetCore;
+using NSwag.Examples;
 using NSwag.Generation.Processors.Security;
+using System.Reflection;
 using ZymLabs.NSwag.FluentValidation;
 
 namespace CleanTib.Infrastructure.OpenApi;
@@ -17,91 +19,91 @@ internal static class Startup
     {
         var settings = config.GetSection(nameof(SwaggerSettings)).Get<SwaggerSettings>();
         if (settings == null) return services;
-        if (settings.Enable)
+        if (!settings.Enable) return services;
+
+        services.AddVersionedApiExplorer(o => o.SubstituteApiVersionInUrl = true);
+        services.AddEndpointsApiExplorer();
+        services.AddExampleProviders(typeof(TokenExample).Assembly);
+
+        services.AddScoped(provider =>
         {
-            services.AddVersionedApiExplorer(o => o.SubstituteApiVersionInUrl = true);
-            services.AddEndpointsApiExplorer();
+            var validationRules = provider.GetService<IEnumerable<FluentValidationRule>>();
+            var loggerFactory = provider.GetService<ILoggerFactory>();
 
-            services.AddScoped<FluentValidationSchemaProcessor>(provider =>
+            return new FluentValidationSchemaProcessor(provider, validationRules, loggerFactory);
+        });
+
+        _ = services.AddOpenApiDocument((document, serviceProvider) =>
+        {
+            document.AddExamples(serviceProvider);
+            document.PostProcess = doc =>
             {
-                var validationRules = provider.GetService<IEnumerable<FluentValidationRule>>();
-                var loggerFactory = provider.GetService<ILoggerFactory>();
-
-                return new FluentValidationSchemaProcessor(provider, validationRules, loggerFactory);
-            });
-
-            _ = services.AddOpenApiDocument((document, serviceProvider) =>
-            {
-                document.PostProcess = doc =>
+                doc.Info.Title = settings.Title;
+                doc.Info.Version = settings.Version;
+                doc.Info.Description = settings.Description;
+                doc.Info.Contact = new()
                 {
-                    doc.Info.Title = settings.Title;
-                    doc.Info.Version = settings.Version;
-                    doc.Info.Description = settings.Description;
-                    doc.Info.Contact = new()
-                    {
-                        Name = settings.ContactName,
-                        Email = settings.ContactEmail,
-                        Url = settings.ContactUrl
-                    };
-                    doc.Info.License = new()
-                    {
-                        Name = settings.LicenseName,
-                        Url = settings.LicenseUrl
-                    };
+                    Name = settings.ContactName,
+                    Email = settings.ContactEmail,
+                    Url = settings.ContactUrl
                 };
-
-                if (config["SecuritySettings:Provider"].Equals("AzureAd", StringComparison.OrdinalIgnoreCase))
+                doc.Info.License = new()
                 {
-                    document.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                    Name = settings.LicenseName,
+                    Url = settings.LicenseUrl
+                };
+            };
+
+            if (config["SecuritySettings:Provider"].Equals("AzureAd", StringComparison.OrdinalIgnoreCase))
+            {
+                document.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.OAuth2,
+                    Flow = OpenApiOAuth2Flow.AccessCode,
+                    Description = "OAuth2.0 Auth Code with PKCE",
+                    Flows = new()
                     {
-                        Type = OpenApiSecuritySchemeType.OAuth2,
-                        Flow = OpenApiOAuth2Flow.AccessCode,
-                        Description = "OAuth2.0 Auth Code with PKCE",
-                        Flows = new()
+                        AuthorizationCode = new()
                         {
-                            AuthorizationCode = new()
+                            AuthorizationUrl = config["SecuritySettings:Swagger:AuthorizationUrl"],
+                            TokenUrl = config["SecuritySettings:Swagger:TokenUrl"],
+                            Scopes = new Dictionary<string, string>
                             {
-                                AuthorizationUrl = config["SecuritySettings:Swagger:AuthorizationUrl"],
-                                TokenUrl = config["SecuritySettings:Swagger:TokenUrl"],
-                                Scopes = new Dictionary<string, string>
-                                {
                                     { config["SecuritySettings:Swagger:ApiScope"]!, "access the api" }
-                                }
                             }
                         }
-                    });
-                }
-                else
+                    }
+                });
+            }
+            else
+            {
+                document.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
                 {
-                    document.AddSecurity(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
-                    {
-                        Name = "Authorization",
-                        Description = "Input your Bearer token to access this API",
-                        In = OpenApiSecurityApiKeyLocation.Header,
-                        Type = OpenApiSecuritySchemeType.Http,
-                        Scheme = JwtBearerDefaults.AuthenticationScheme,
-                        BearerFormat = "JWT",
-                    });
-                }
+                    Name = "Authorization",
+                    Description = "Input your Bearer token to access this API",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Type = OpenApiSecuritySchemeType.Http,
+                    Scheme = JwtBearerDefaults.AuthenticationScheme,
+                    BearerFormat = "JWT",
+                });
+            }
 
-                document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
-                document.OperationProcessors.Add(new SwaggerGlobalAuthProcessor());
-                //document.OperationProcessors.Add(new DefaultValuesOperationProcessor());
+            document.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor());
+            document.OperationProcessors.Add(new SwaggerGlobalAuthProcessor());
 
-                document.TypeMappers.Add(new PrimitiveTypeMapper(typeof(TimeSpan), schema =>
-                {
-                    schema.Type = NJsonSchema.JsonObjectType.String;
-                    schema.IsNullableRaw = true;
-                    schema.Pattern = @"^([0-9]{1}|(?:0[0-9]|1[0-9]|2[0-3])+):([0-5]?[0-9])(?::([0-5]?[0-9])(?:.(\d{1,9}))?)?$";
-                    schema.Example = "02:00:00";
-                }));
+            document.TypeMappers.Add(new PrimitiveTypeMapper(typeof(TimeSpan), schema =>
+            {
+                schema.Type = NJsonSchema.JsonObjectType.String;
+                schema.IsNullableRaw = true;
+                schema.Pattern = @"^([0-9]{1}|(?:0[0-9]|1[0-9]|2[0-3])+):([0-5]?[0-9])(?::([0-5]?[0-9])(?:.(\d{1,9}))?)?$";
+                schema.Example = "02:00:00";
+            }));
 
-                document.OperationProcessors.Add(new SwaggerHeaderAttributeProcessor());
+            document.OperationProcessors.Add(new SwaggerHeaderAttributeProcessor());
 
-                var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
-                document.SchemaProcessors.Add(fluentValidationSchemaProcessor);
-            });
-        }
+            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
+            document.SchemaProcessors.Add(fluentValidationSchemaProcessor);
+        });
 
         return services;
     }

@@ -2,14 +2,14 @@
 
 namespace CleanTib.Application.Catalog.Brands;
 
-public class DeleteBrandRequest : IRequest<Guid>
+public class DeleteBrandRequest : IRequest<Result<Guid>>
 {
     public Guid Id { get; set; }
 
     public DeleteBrandRequest(Guid id) => Id = id;
 }
 
-public class DeleteBrandRequestHandler : IRequestHandler<DeleteBrandRequest, Guid>
+public class DeleteBrandRequestHandler : IRequestHandler<DeleteBrandRequest, Result<Guid>>
 {
     // Add Domain Events automatically by using IRepositoryWithEvents
     private readonly IRepositoryWithEvents<Brand> _brandRepo;
@@ -19,7 +19,7 @@ public class DeleteBrandRequestHandler : IRequestHandler<DeleteBrandRequest, Gui
     public DeleteBrandRequestHandler(IRepositoryWithEvents<Brand> brandRepo, IReadRepository<Product> productRepo, IStringLocalizer<DeleteBrandRequestHandler> localizer) =>
         (_brandRepo, _productRepo, _t) = (brandRepo, productRepo, localizer);
 
-    public async Task<Guid> Handle(DeleteBrandRequest request, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> Handle(DeleteBrandRequest request, CancellationToken cancellationToken)
     {
         if (await _productRepo.AnyAsync(new ProductsByBrandSpec(request.Id), cancellationToken))
         {
@@ -32,6 +32,6 @@ public class DeleteBrandRequestHandler : IRequestHandler<DeleteBrandRequest, Gui
 
         await _brandRepo.DeleteAsync(brand, cancellationToken);
 
-        return request.Id;
+        return Result<Guid>.Success(request.Id);
     }
 }

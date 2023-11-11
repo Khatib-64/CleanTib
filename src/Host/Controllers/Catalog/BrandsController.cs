@@ -23,7 +23,7 @@ public class BrandsController : VersionedApiController
     [HttpPost]
     [MustHavePermission(FSHAction.Create, FSHResource.Brands)]
     [OpenApiOperation("Create a new brand.", "")]
-    public Task<Guid> CreateAsync(CreateBrandRequest request)
+    public Task<Result<Guid>> CreateAsync(CreateBrandRequest request)
     {
         return Mediator.Send(request);
     }
@@ -41,7 +41,7 @@ public class BrandsController : VersionedApiController
     [HttpDelete("{id:guid}")]
     [MustHavePermission(FSHAction.Delete, FSHResource.Brands)]
     [OpenApiOperation("Delete a brand.", "")]
-    public Task<Guid> DeleteAsync(Guid id)
+    public Task<Result<Guid>> DeleteAsync(Guid id)
     {
         return Mediator.Send(new DeleteBrandRequest(id));
     }

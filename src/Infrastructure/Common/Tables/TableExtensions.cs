@@ -1,5 +1,5 @@
-﻿using CleanTib.Domain.Common.Attributes;
-using CleanTib.Infrastructure.Common.Extensions;
+﻿using CleanTib.Application.Common.Extensions;
+using CleanTib.Domain.Common.Attributes;
 using System.Reflection;
 
 namespace CleanTib.Infrastructure.Common;
@@ -21,9 +21,7 @@ public static class TableExtensions
         }
 
         foreach (var property in propertiesInfo)
-        {
             properties.Add(property.Name);
-        }
 
         var rows = new List<List<string>>();
 
@@ -41,7 +39,7 @@ public static class TableExtensions
 
                 if (propertyInfo.PropertyType.IsOfType<Enum>())
                 {
-                    // Do somthing to 'result', return it translated to a secific language maybe?
+                    // Do somthing to 'result', return it translated to a specific language maybe?
                     string result = ((Enum)propertyInfo.GetValue(item)!).ToString();
                     record.Add(result);
                     continue;

@@ -111,6 +111,7 @@ internal partial class UserService
             LastName = request.LastName,
             UserName = request.UserName,
             PhoneNumber = request.PhoneNumber,
+            EmailConfirmed = true,
             IsActive = true
         };
 

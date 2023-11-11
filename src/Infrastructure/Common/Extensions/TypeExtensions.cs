@@ -29,14 +29,4 @@ public static class TypeExtensions
 
         return values;
     }
-
-    public static bool IsOfType<T>(this Type t)
-    {
-        if (t == typeof(T))
-            return true;
-
-        Type? underlyingType = Nullable.GetUnderlyingType(t);
-
-        return underlyingType == typeof(T);
-    }
 }

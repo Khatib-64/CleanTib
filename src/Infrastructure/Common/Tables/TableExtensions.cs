@@ -39,7 +39,8 @@ public static class TableExtensions
 
                 if (propertyInfo.PropertyType.IsOfType<Enum>())
                 {
-                    // Do somthing to 'result', return it translated to a specific language maybe?
+                    // Do something to 'result', return it translated to a specific language maybe?
+
                     string result = ((Enum)propertyInfo.GetValue(item)!).ToString();
                     record.Add(result);
                     continue;

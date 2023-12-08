@@ -1,7 +1,6 @@
 ﻿using System.Security.Claims;
 using CleanTib.Application.Common.Exceptions;
 using CleanTib.Application.Identity.Users;
-using CleanTib.Infrastructure.Multitenancy;
 using CleanTib.Shared.Authorization;
 using CleanTib.Shared.Multitenancy;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

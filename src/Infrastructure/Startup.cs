@@ -10,7 +10,6 @@ using CleanTib.Infrastructure.Localization;
 using CleanTib.Infrastructure.Mailing;
 using CleanTib.Infrastructure.Mapping;
 using CleanTib.Infrastructure.Middleware;
-using CleanTib.Infrastructure.Multitenancy;
 using CleanTib.Infrastructure.Notifications;
 using CleanTib.Infrastructure.OpenApi;
 using CleanTib.Infrastructure.Persistence;

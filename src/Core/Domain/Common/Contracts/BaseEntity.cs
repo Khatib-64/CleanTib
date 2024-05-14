@@ -1,11 +1,10 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using MassTransit;
 
 namespace CleanTib.Domain.Common.Contracts;
 
 public abstract class BaseEntity : BaseEntity<DefaultIdType>
 {
-    protected BaseEntity() => Id = NewId.Next().ToGuid();
+    protected BaseEntity() => Id = Guid.NewGuid();
 }
 
 public abstract class BaseEntity<TId> : IEntity<TId>

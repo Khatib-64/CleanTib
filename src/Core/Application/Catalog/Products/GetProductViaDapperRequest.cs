@@ -11,21 +11,17 @@ public class GetProductViaDapperRequest : IRequest<ProductDto>
 
 public class GetProductViaDapperRequestHandler : IRequestHandler<GetProductViaDapperRequest, ProductDto>
 {
-    private readonly IDapperRepository _repository;
+    private readonly IRepository<Product> _repository;
     private readonly IStringLocalizer _t;
 
-    public GetProductViaDapperRequestHandler(IDapperRepository repository, IStringLocalizer<GetProductViaDapperRequestHandler> localizer) =>
+    public GetProductViaDapperRequestHandler(IRepository<Product> repository, IStringLocalizer<GetProductViaDapperRequestHandler> localizer) =>
         (_repository, _t) = (repository, localizer);
 
     public async Task<ProductDto> Handle(GetProductViaDapperRequest request, CancellationToken cancellationToken)
     {
-        var product = await _repository.QueryFirstOrDefaultAsync<Product>(
-            $"SELECT * FROM Catalog.\"Products\" WHERE \"Id\"  = '{request.Id}' AND \"TenantId\" = '@tenant'", cancellationToken: cancellationToken);
+        var product = await _repository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new NotFoundException(_t["Product {0} Not Found.", request.Id]);
 
-        _ = product ?? throw new NotFoundException(_t["Product {0} Not Found.", request.Id]);
-
-        // Using mapster here throws a nullreference exception because of the "BrandName" property
-        // in ProductDto and the product not having a Brand assigned.
         return new ProductDto
         {
             Id = product.Id,

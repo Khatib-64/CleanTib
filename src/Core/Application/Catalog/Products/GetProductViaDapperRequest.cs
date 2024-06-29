@@ -1,6 +1,4 @@
-﻿using Mapster;
-
-namespace CleanTib.Application.Catalog.Products;
+﻿namespace CleanTib.Application.Catalog.Products;
 
 public class GetProductViaDapperRequest : IRequest<ProductDto>
 {

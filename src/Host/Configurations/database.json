@@ -2,6 +2,6 @@
   "DatabaseSettings": {
     "DBProvider": "mssql",
     //"ConnectionString": "Host=localhost;Port=5432;Database=fshDb;Username=postgres;Password=admin;Include Error Detail=true"
-    "ConnectionString": "Data Source=KHATIB\\SQLEXPRESS; Initial Catalog=CleanTib; Trusted_Connection=True; MultipleActiveResultSets=true; TrustServerCertificate=True;"
+    "ConnectionString": "Data Source=.; Initial Catalog=CleanTib; Trusted_Connection=True; MultipleActiveResultSets=true; TrustServerCertificate=True;"
   }
 }

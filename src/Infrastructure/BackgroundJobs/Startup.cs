@@ -1,6 +1,5 @@
 using CleanTib.Infrastructure.Common;
 using Hangfire;
-using Hangfire.Console;
 using Hangfire.Console.Extensions;
 using Hangfire.MySql;
 using Hangfire.PostgreSql;
@@ -34,8 +33,10 @@ internal static class Startup
         services.AddHangfire((provider, hangfireConfig) => hangfireConfig
             .UseDatabase(storageSettings.StorageProvider, storageSettings.ConnectionString, config)
             .UseFilter(new FSHJobFilter(provider))
-            .UseFilter(new LogJobFilter())
-            .UseConsole());
+            .UseFilter(new LogJobFilter()));
+
+            // TODO: Find a way to fix the conflict between libraries over this line, then uncomment it.
+            // .UseConsole());
 
         return services;
     }

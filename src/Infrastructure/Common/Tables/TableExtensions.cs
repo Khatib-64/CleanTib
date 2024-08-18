@@ -8,7 +8,7 @@ public static class TableExtensions
 {
     public static Table ConvertToTable<T>(this IList<T> data, string? title = default)
     {
-        var properties = new List<string>();
+        var tableColumns = new List<string>();
         var propertiesInfo = typeof(T).GetProperties();
 
         bool hasTakeThisPropertyAttribute = propertiesInfo.Any(property => property.GetCustomAttribute<TakeThisPropertyAttribute>() != null);
@@ -21,9 +21,9 @@ public static class TableExtensions
         }
 
         foreach (var property in propertiesInfo)
-            properties.Add(property.Name);
+            tableColumns.Add(property.Name);
 
-        var rows = new List<List<string>>();
+        var tableRows = new List<List<string>>();
 
         foreach (object item in data)
         {
@@ -56,14 +56,14 @@ public static class TableExtensions
                 record.Add(propertyInfo.GetValue(item)!.ToString()!);
             }
 
-            rows.Add(record);
+            tableRows.Add(record);
         }
 
         return new Table
         {
             Title = title,
-            Columns = properties,
-            Rows = rows
+            Columns = tableColumns,
+            Rows = tableRows
         };
     }
 }

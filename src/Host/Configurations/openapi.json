@@ -1,9 +1,9 @@
 {
   "SwaggerSettings": {
     "Enable": true,
-    "Title": ".NET 7 WebAPI - Clean Architecture",
+    "Title": ".NET 8 WebAPI - Clean Architecture",
     "Version": "1.0.0",
-    "Description": "Clean Architecture for .NET 7 WebApi.",
+    "Description": "Clean Architecture for .NET 8 WebApi.",
     "ContactName": "Teseer Al-KhatiB",
     "ContactEmail": "teseer.alkhatib16@gmail.com",
     "ContactUrl": "https://linkedin.com/in/teseer-al-khatib",

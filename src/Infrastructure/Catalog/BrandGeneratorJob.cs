@@ -6,10 +6,10 @@ using CleanTib.Domain.Catalog;
 using CleanTib.Shared.Notifications;
 using Hangfire;
 using Hangfire.Console.Extensions;
-using Hangfire.Console.Progress;
 using Hangfire.Server;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Hangfire.Console.Progress;
 
 namespace CleanTib.Infrastructure.Catalog;
 
@@ -22,7 +22,9 @@ public class BrandGeneratorJob : IBrandGeneratorJob
     private readonly PerformingContext _performingContext;
     private readonly INotificationSender _notifications;
     private readonly ICurrentUser _currentUser;
-    private readonly IProgressBar _progress;
+
+    // TODO: Find a way to fix the conflict between libraries over this line, then uncomment it.
+    // private readonly IProgressBar _progress;
 
     public BrandGeneratorJob(
         ILogger<BrandGeneratorJob> logger,
@@ -40,12 +42,15 @@ public class BrandGeneratorJob : IBrandGeneratorJob
         _performingContext = performingContext;
         _notifications = notifications;
         _currentUser = currentUser;
-        _progress = _progressBar.Create();
+
+        // TODO: Find a way to fix the conflict between libraries over this line, then uncomment it.
+        // _progress = _progressBar.Create();
     }
 
     private async Task NotifyAsync(string message, int progress, CancellationToken cancellationToken)
     {
-        _progress.SetValue(progress);
+        // TODO: Find a way to fix the conflict between libraries over this line, then uncomment it.
+        // _progress.SetValue(progress);
         await _notifications.SendToUserAsync(
             new JobNotification()
             {

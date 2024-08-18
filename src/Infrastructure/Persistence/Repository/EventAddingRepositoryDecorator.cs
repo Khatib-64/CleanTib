@@ -2,6 +2,8 @@
 using CleanTib.Application.Common.Persistence;
 using CleanTib.Domain.Common.Contracts;
 using CleanTib.Domain.Common.Events;
+using DocumentFormat.OpenXml.Spreadsheet;
+using System.Threading;
 
 namespace CleanTib.Infrastructure.Persistence.Repository;
 
@@ -40,9 +42,7 @@ public class EventAddingRepositoryDecorator<T> : IRepositoryWithEvents<T>
     public Task DeleteRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
     {
         foreach (var entity in entities)
-        {
             entity.DomainEvents.Add(EntityDeletedEvent.WithEntity(entity));
-        }
 
         return _decorated.DeleteRangeAsync(entities, cancellationToken);
     }
@@ -93,4 +93,15 @@ public class EventAddingRepositoryDecorator<T> : IRepositoryWithEvents<T>
 
     public Task<TResult?> SingleOrDefaultAsync<TResult>(ISingleResultSpecification<T, TResult> specification, CancellationToken cancellationToken = default) =>
         _decorated.SingleOrDefaultAsync<TResult>(specification, cancellationToken);
+
+    public Task DeleteRangeAsync(ISpecification<T> specification, CancellationToken cancellationToken = default)
+        => _decorated.DeleteRangeAsync(specification, cancellationToken);
+
+    public async IAsyncEnumerable<T> AsAsyncEnumerable(ISpecification<T> specification)
+    {
+        var entities = await _decorated.ListAsync(specification);
+
+        foreach (var item in entities)
+            yield return item;
+    }
 }

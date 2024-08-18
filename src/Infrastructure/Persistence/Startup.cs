@@ -63,7 +63,7 @@ internal static class Startup
                                  e.MigrationsAssembly("Migrators.Oracle")),
             DbProviderKeys.SqLite => builder.UseSqlite(connectionString, e =>
                                  e.MigrationsAssembly("Migrators.SqLite")),
-            _ => throw new InvalidOperationException($"DB Provider {dbProvider} is not supported."),
+            _ => throw new InvalidOperationException($"DB Provider {dbProvider} is not supported.")
         };
     }
 
@@ -72,10 +72,11 @@ internal static class Startup
         // Add Repositories
         services.AddScoped(typeof(IRepository<>), typeof(ApplicationDbRepository<>));
 
-        foreach (var aggregateRootType in
-            typeof(IAggregateRoot).Assembly.GetExportedTypes()
+        var classesThatInheritFromIAggregateRoot = typeof(IAggregateRoot).Assembly.GetExportedTypes()
                 .Where(t => typeof(IAggregateRoot).IsAssignableFrom(t) && t.IsClass)
-                .ToList())
+                .ToList();
+
+        foreach (var aggregateRootType in classesThatInheritFromIAggregateRoot)
         {
             // Add ReadRepositories.
             services.AddScoped(typeof(IReadRepository<>).MakeGenericType(aggregateRootType), sp =>

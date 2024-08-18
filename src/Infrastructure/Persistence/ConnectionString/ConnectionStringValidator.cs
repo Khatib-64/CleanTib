@@ -1,11 +1,11 @@
 ﻿using CleanTib.Application.Common.Persistence;
 using CleanTib.Infrastructure.Common;
+using Microsoft.Data.SqlClient;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MySqlConnector;
 using Npgsql;
-using System.Data.SqlClient;
 
 namespace CleanTib.Infrastructure.Persistence.ConnectionString;
 

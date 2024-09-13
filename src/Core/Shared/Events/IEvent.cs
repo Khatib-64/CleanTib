@@ -1,5 +1,3 @@
 ﻿namespace CleanTib.Shared.Events;
 
-public interface IEvent
-{
-}
+public interface IEvent;

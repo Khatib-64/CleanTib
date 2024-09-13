@@ -1,25 +1,15 @@
 ﻿namespace CleanTib.Domain.Identity;
 
-public abstract class ApplicationUserEvent : DomainEvent
+public abstract class ApplicationUserEvent(string userId) : DomainEvent
 {
-    public string UserId { get; set; } = default!;
-
-    protected ApplicationUserEvent(string userId) => UserId = userId;
+    public string UserId { get; set; } = userId;
 }
 
-public class ApplicationUserCreatedEvent : ApplicationUserEvent
+public class ApplicationUserCreatedEvent(string userId) : ApplicationUserEvent(userId)
 {
-    public ApplicationUserCreatedEvent(string userId)
-        : base(userId)
-    {
-    }
 }
 
-public class ApplicationUserUpdatedEvent : ApplicationUserEvent
+public class ApplicationUserUpdatedEvent(string userId, bool rolesUpdated = false) : ApplicationUserEvent(userId)
 {
-    public bool RolesUpdated { get; set; }
-
-    public ApplicationUserUpdatedEvent(string userId, bool rolesUpdated = false)
-        : base(userId) =>
-        RolesUpdated = rolesUpdated;
+    public bool RolesUpdated { get; set; } = rolesUpdated;
 }

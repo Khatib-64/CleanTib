@@ -16,34 +16,22 @@ internal static class Startup
                 if (!context.Response.HasStarted)
                 {
                     if (!string.IsNullOrWhiteSpace(settings.Headers.XFrameOptions))
-                    {
-                        context.Response.Headers.Add(HeaderNames.XFRAMEOPTIONS, settings.Headers.XFrameOptions);
-                    }
+                        context.Response.Headers[HeaderNames.XFRAMEOPTIONS] = settings.Headers.XFrameOptions;
 
                     if (!string.IsNullOrWhiteSpace(settings.Headers.XContentTypeOptions))
-                    {
-                        context.Response.Headers.Add(HeaderNames.XCONTENTTYPEOPTIONS, settings.Headers.XContentTypeOptions);
-                    }
+                        context.Response.Headers[HeaderNames.XCONTENTTYPEOPTIONS] = settings.Headers.XContentTypeOptions;
 
                     if (!string.IsNullOrWhiteSpace(settings.Headers.ReferrerPolicy))
-                    {
-                        context.Response.Headers.Add(HeaderNames.REFERRERPOLICY, settings.Headers.ReferrerPolicy);
-                    }
+                        context.Response.Headers[HeaderNames.REFERRERPOLICY] = settings.Headers.ReferrerPolicy;
 
                     if (!string.IsNullOrWhiteSpace(settings.Headers.PermissionsPolicy))
-                    {
-                        context.Response.Headers.Add(HeaderNames.PERMISSIONSPOLICY, settings.Headers.PermissionsPolicy);
-                    }
+                        context.Response.Headers[HeaderNames.PERMISSIONSPOLICY] = settings.Headers.PermissionsPolicy;
 
                     if (!string.IsNullOrWhiteSpace(settings.Headers.SameSite))
-                    {
-                        context.Response.Headers.Add(HeaderNames.SAMESITE, settings.Headers.SameSite);
-                    }
+                        context.Response.Headers[HeaderNames.SAMESITE] = settings.Headers.SameSite;
 
                     if (!string.IsNullOrWhiteSpace(settings.Headers.XXSSProtection))
-                    {
-                        context.Response.Headers.Add(HeaderNames.XXSSPROTECTION, settings.Headers.XXSSProtection);
-                    }
+                        context.Response.Headers[HeaderNames.XXSSPROTECTION] = settings.Headers.XXSSProtection;
                 }
 
                 await next();

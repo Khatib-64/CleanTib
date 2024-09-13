@@ -1,6 +1,6 @@
 ﻿namespace CleanTib.Application.Catalog.Products;
 
-public class ProductByIdWithBrandSpec : Specification<Product, ProductDetailsDto>, ISingleResultSpecification
+public class ProductByIdWithBrandSpec : Specification<Product, ProductDetailsDto>
 {
     public ProductByIdWithBrandSpec(Guid id) =>
         Query

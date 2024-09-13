@@ -1,8 +1,6 @@
 namespace CleanTib.Domain.Common.Contracts;
 
-public abstract class AuditableEntity : AuditableEntity<DefaultIdType>
-{
-}
+public abstract class AuditableEntity : AuditableEntity<DefaultIdType>;
 
 public abstract class AuditableEntity<T> : BaseEntity<T>, IAuditableEntity, ISoftDelete
 {

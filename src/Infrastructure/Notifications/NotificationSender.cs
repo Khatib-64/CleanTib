@@ -30,11 +30,11 @@ public class NotificationSender : INotificationSender
         return Task.FromResult("SendToAllAsync");
     }
 
-    //public Task SendToAllAsync(INotificationMessage notification, CancellationToken cancellationTo3ken) =>
+    // public Task SendToAllAsync(INotificationMessage notification, CancellationToken cancellationTo3ken) =>
     //    _notificationHubContext.Clients.Group($"GroupTenant-{_currentTenant.Id}")
     //        .SendAsync(NotificationFromServer, notification.GetType().FullName, notification, cancellationToken);
 
-    //public Task SendToAllAsync(INotificationMessage notification, IEnumerable<string> excludedConnectionIds, CancellationToken cancellationToken) =>
+    // public Task SendToAllAsync(INotificationMessage notification, IEnumerable<string> excludedConnectionIds, CancellationToken cancellationToken) =>
     //    _notificationHubContext.Clients.GroupExcept($"GroupTenant-{_currentTenant.Id}", excludedConnectionIds)
     //        .SendAsync(NotificationFromServer, notification.GetType().FullName, notification, cancellationToken);
 

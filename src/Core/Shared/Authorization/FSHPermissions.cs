@@ -30,8 +30,8 @@ public static class FSHResource
 
 public static class FSHPermissions
 {
-    private static readonly FSHPermission[] _all = new FSHPermission[]
-    {
+    private static readonly FSHPermission[] _all =
+    [
         new("View Dashboard", FSHAction.View, FSHResource.Dashboard),
         new("View Hangfire", FSHAction.View, FSHResource.Hangfire),
         new("View Users", FSHAction.View, FSHResource.Users),
@@ -65,7 +65,7 @@ public static class FSHPermissions
         new("Create Tenants", FSHAction.Create, FSHResource.Tenants, IsRoot: true),
         new("Update Tenants", FSHAction.Update, FSHResource.Tenants, IsRoot: true),
         new("Upgrade Tenant Subscription", FSHAction.UpgradeSubscription, FSHResource.Tenants, IsRoot: true)
-    };
+    ];
 
     public static IReadOnlyList<FSHPermission> All { get; } = new ReadOnlyCollection<FSHPermission>(_all);
     public static IReadOnlyList<FSHPermission> Root { get; } = new ReadOnlyCollection<FSHPermission>(_all.Where(p => p.IsRoot).ToArray());

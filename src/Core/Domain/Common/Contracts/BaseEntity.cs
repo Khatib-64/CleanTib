@@ -12,5 +12,5 @@ public abstract class BaseEntity<TId> : IEntity<TId>
     public TId Id { get; protected set; } = default!;
 
     [NotMapped]
-    public List<DomainEvent> DomainEvents { get; } = new();
+    public List<DomainEvent> DomainEvents { get; } = [];
 }

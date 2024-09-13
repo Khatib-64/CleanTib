@@ -1,8 +1,6 @@
 namespace CleanTib.Application.Auditing;
 
-public class GetMyAuditLogsRequest : IRequest<List<AuditDto>>
-{
-}
+public class GetMyAuditLogsRequest : IRequest<List<AuditDto>>;
 
 public class GetMyAuditLogsRequestHandler : IRequestHandler<GetMyAuditLogsRequest, List<AuditDto>>
 {

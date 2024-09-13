@@ -95,7 +95,7 @@ internal class ApplicationDbSeeder
                 IsActive = true
             };
 
-            _logger.LogInformation("Seeding Default Admin User", Root.Id);
+            _logger.LogInformation("Seeding Default Admin User");
             var password = new PasswordHasher<ApplicationUser>();
             adminUser.PasswordHash = password.HashPassword(adminUser, DefaultPassword);
             await _userManager.CreateAsync(adminUser);
@@ -104,7 +104,7 @@ internal class ApplicationDbSeeder
         // Assign role to user
         if (!await _userManager.IsInRoleAsync(adminUser, FSHRoles.Admin))
         {
-            _logger.LogInformation("Assigning Admin Role to Admin User", Root.Id);
+            _logger.LogInformation("Assigning Admin Role to Admin User");
             await _userManager.AddToRoleAsync(adminUser, FSHRoles.Admin);
         }
     }

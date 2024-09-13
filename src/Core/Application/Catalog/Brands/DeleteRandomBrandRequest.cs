@@ -1,8 +1,6 @@
 ﻿namespace CleanTib.Application.Catalog.Brands;
 
-public class DeleteRandomBrandRequest : IRequest<string>
-{
-}
+public class DeleteRandomBrandRequest : IRequest<string>;
 
 public class DeleteRandomBrandRequestHandler : IRequestHandler<DeleteRandomBrandRequest, string>
 {

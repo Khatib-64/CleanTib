@@ -5,7 +5,7 @@
     <AssemblyName>CleanTib.Shared</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Update="Roslynator.Analyzers" Version="4.2.0">
+    <PackageReference Update="Roslynator.Analyzers" Version="4.12.5">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

@@ -25,8 +25,11 @@ public static class TableExtensions
 
         var tableRows = new List<List<string>>();
 
-        foreach (object item in data)
+        foreach (object? item in data)
         {
+            if (item is null)
+                continue;
+
             var record = new List<string>();
 
             foreach (var propertyInfo in propertiesInfo)

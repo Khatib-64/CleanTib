@@ -33,7 +33,7 @@ public class HangfireCustomBasicAuthenticationFilter : IDashboardAuthorizationFi
             return false;
         }
 
-        var authValues = AuthenticationHeaderValue.Parse(header);
+        var authValues = AuthenticationHeaderValue.Parse(header!);
 
         if (NotBasicAuthentication(authValues))
         {

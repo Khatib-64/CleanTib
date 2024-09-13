@@ -22,10 +22,14 @@ internal static class Startup
 
         services.AddHangfireConsoleExtensions();
 
-        var storageSettings = config.GetSection("HangfireSettings:Storage").Get<HangfireStorageSettings>();
-        if (storageSettings is null) throw new Exception("Hangfire Storage Provider is not configured.");
-        if (string.IsNullOrEmpty(storageSettings.StorageProvider)) throw new Exception("Hangfire Storage Provider is not configured.");
-        if (string.IsNullOrEmpty(storageSettings.ConnectionString)) throw new Exception("Hangfire Storage Provider ConnectionString is not configured.");
+        var storageSettings = config.GetSection("HangfireSettings:Storage").Get<HangfireStorageSettings>()
+            ?? throw new Exception("Hangfire Storage Provider is not configured.");
+
+        if (string.IsNullOrEmpty(storageSettings.StorageProvider))
+            throw new Exception("Hangfire Storage Provider is not configured.");
+        if (string.IsNullOrEmpty(storageSettings.ConnectionString))
+            throw new Exception("Hangfire Storage Provider ConnectionString is not configured.");
+
         _logger.Information($"Hangfire: Current Storage Provider : {storageSettings.StorageProvider}");
 
         services.AddSingleton<JobActivator, FSHJobActivator>();
@@ -35,8 +39,8 @@ internal static class Startup
             .UseFilter(new FSHJobFilter(provider))
             .UseFilter(new LogJobFilter()));
 
-            // TODO: Find a way to fix the conflict between libraries over this line, then uncomment it.
-            // .UseConsole());
+        // TODO: Find a way to fix the conflict between libraries over this line, then uncomment it.
+        // .UseConsole());
 
         return services;
     }
@@ -45,7 +49,7 @@ internal static class Startup
         dbProvider.ToLowerInvariant() switch
         {
             DbProviderKeys.Npgsql =>
-                hangfireConfig.UsePostgreSqlStorage(connectionString, config.GetSection("HangfireSettings:Storage:Options").Get<PostgreSqlStorageOptions>()),
+                hangfireConfig.UsePostgreSqlStorage(conf => conf.UseNpgsqlConnection(connectionString), config.GetSection("HangfireSettings:Storage:Options").Get<PostgreSqlStorageOptions>()),
             DbProviderKeys.SqlServer =>
                 hangfireConfig.UseSqlServerStorage(connectionString, config.GetSection("HangfireSettings:Storage:Options").Get<SqlServerStorageOptions>()),
             DbProviderKeys.SqLite =>
@@ -57,16 +61,17 @@ internal static class Startup
 
     internal static IApplicationBuilder UseHangfireDashboard(this IApplicationBuilder app, IConfiguration config)
     {
-        var dashboardOptions = config.GetSection("HangfireSettings:Dashboard").Get<DashboardOptions>();
-        if (dashboardOptions is null) throw new Exception("Hangfire Dashboard is not configured.");
-        dashboardOptions.Authorization = new[]
-        {
-           new HangfireCustomBasicAuthenticationFilter
-           {
-                User = config.GetSection("HangfireSettings:Credentials:User").Value!,
-                Pass = config.GetSection("HangfireSettings:Credentials:Password").Value!
-           }
-        };
+        var dashboardOptions = config.GetSection("HangfireSettings:Dashboard").Get<DashboardOptions>()
+            ?? throw new Exception("Hangfire Dashboard is not configured.");
+
+        dashboardOptions.Authorization =
+        [
+            new HangfireCustomBasicAuthenticationFilter
+            {
+                User = config["HangfireSettings:Credentials:User"]!,
+                Pass = config["HangfireSettings:Credentials:Password"]!
+            },
+        ];
 
         return app.UseHangfireDashboard(config["HangfireSettings:Route"], dashboardOptions);
     }

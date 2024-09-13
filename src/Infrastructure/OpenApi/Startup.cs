@@ -101,8 +101,8 @@ internal static class Startup
 
             document.OperationProcessors.Add(new SwaggerHeaderAttributeProcessor());
 
-            //var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
-            //document.SchemaSettings.SchemaProcessors.Add(fluentValidationSchemaProcessor!);
+            var fluentValidationSchemaProcessor = serviceProvider.CreateScope().ServiceProvider.GetService<FluentValidationSchemaProcessor>();
+            document.SchemaSettings.SchemaProcessors.Add(fluentValidationSchemaProcessor!);
         });
 
         return services;

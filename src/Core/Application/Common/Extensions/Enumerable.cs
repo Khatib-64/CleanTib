@@ -1,5 +1,3 @@
 ﻿namespace CleanTib.Application.Common.Extensions;
 
-public static class EnumerableExtensions
-{
-}
+public static class EnumerableExtensions;

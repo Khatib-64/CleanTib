@@ -20,7 +20,7 @@ public class DatabaseSettings : IValidatableObject
         {
             yield return new ValidationResult(
                 $"{nameof(DatabaseSettings)}.{nameof(ConnectionString)} is not configured",
-                new[] { nameof(ConnectionString) });
+                [nameof(ConnectionString)]);
         }
     }
 }

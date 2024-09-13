@@ -1,5 +1,3 @@
 ﻿namespace CleanTib.Application.Common.Extensions;
 
-public static class StringsExtensions
-{
-}
+public static class StringsExtensions;

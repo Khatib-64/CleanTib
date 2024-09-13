@@ -2,6 +2,4 @@
 
 namespace CleanTib.Infrastructure.Identity.Entities;
 
-public class UserRole : IdentityUserRole<string>
-{
-}
+public class UserRole : IdentityUserRole<string>;

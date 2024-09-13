@@ -1,6 +1,4 @@
-﻿namespace CleanTib.Infrastructure.OpenApi;
-
-// Didn't remove it so I can know how to make SwaggerHeaderAttribute.
+﻿// Didn't remove it so I can know how to make SwaggerHeaderAttribute.
 
 // public class TenantIdHeaderAttribute : SwaggerHeaderAttribute
 // {

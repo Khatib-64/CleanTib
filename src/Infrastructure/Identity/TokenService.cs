@@ -59,16 +59,12 @@ internal class TokenService : ITokenService
     {
         var userPrincipal = GetPrincipalFromExpiredToken(request.Token);
         string? userEmail = userPrincipal.GetEmail();
-        var user = await _userManager.FindByEmailAsync(userEmail!);
-        if (user is null)
-        {
-            throw new UnauthorizedException(_t["Authentication Failed."]);
-        }
+
+        var user = await _userManager.FindByEmailAsync(userEmail!)
+            ?? throw new UnauthorizedException(_t["Authentication Failed."]);
 
         if (user.RefreshToken != request.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.UtcNow)
-        {
             throw new UnauthorizedException(_t["Invalid Refresh Token."]);
-        }
 
         return await GenerateTokensAndUpdateUser(user, ipAddress);
     }
@@ -89,8 +85,7 @@ internal class TokenService : ITokenService
         GenerateEncryptedToken(GetSigningCredentials(), GetClaims(user, ipAddress));
 
     private IEnumerable<Claim> GetClaims(ApplicationUser user, string ipAddress) =>
-        new List<Claim>
-        {
+        [
             new(ClaimTypes.NameIdentifier, user.Id),
             new(ClaimTypes.Email, user.Email!),
             new(FSHClaims.Fullname, $"{user.FirstName} {user.LastName}"),
@@ -99,7 +94,7 @@ internal class TokenService : ITokenService
             new(FSHClaims.IpAddress, ipAddress),
             new(FSHClaims.ImageUrl, user.ImageUrl ?? string.Empty),
             new(ClaimTypes.MobilePhone, user.PhoneNumber ?? string.Empty)
-        };
+        ];
 
     private static string GenerateRefreshToken()
     {

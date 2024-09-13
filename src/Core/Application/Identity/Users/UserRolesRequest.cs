@@ -2,5 +2,5 @@ namespace CleanTib.Application.Identity.Users;
 
 public class UserRolesRequest
 {
-    public List<UserRoleDto> UserRoles { get; set; } = new();
+    public List<UserRoleDto> UserRoles { get; set; } = [];
 }

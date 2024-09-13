@@ -17,7 +17,7 @@ public sealed class Result<T> : BaseResult
     public T Data { get; }
 
     private Result(bool isSuccess, T data, string? errorMessage = null)
-        : base(isSuccess, errorMessage!)
+        : base(isSuccess, errorMessage)
     {
         Data = data;
     }
@@ -36,7 +36,7 @@ public sealed class Result<T> : BaseResult
 public sealed class Result : BaseResult
 {
     private Result(bool isSuccess, string? errorMessage = null)
-        : base(isSuccess, errorMessage!)
+        : base(isSuccess, errorMessage)
     {
     }
 

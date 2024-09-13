@@ -2,11 +2,9 @@
 
 namespace CleanTib.Application.Catalog.Products;
 
-public class DeleteProductRequest : IRequest<Guid>
+public class DeleteProductRequest(Guid id) : IRequest<Guid>
 {
-    public Guid Id { get; set; }
-
-    public DeleteProductRequest(Guid id) => Id = id;
+    public Guid Id { get; set; } = id;
 }
 
 public class DeleteProductRequestHandler : IRequestHandler<DeleteProductRequest, Guid>

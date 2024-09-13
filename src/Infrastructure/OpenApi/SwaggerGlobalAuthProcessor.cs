@@ -41,19 +41,17 @@ public class SwaggerGlobalAuthProcessor : IOperationProcessor
         if (list is not null)
         {
             if (list.OfType<AllowAnonymousAttribute>().Any())
-            {
                 return true;
-            }
 
             if (context.OperationDescription.Operation.Security?.Any() != true)
             {
-                (context.OperationDescription.Operation.Security ??= new List<OpenApiSecurityRequirement>()).Add(new OpenApiSecurityRequirement
-                {
+                context.OperationDescription.Operation.Security ??=
+                [
+                    new OpenApiSecurityRequirement()
                     {
-                        _name,
-                        Array.Empty<string>()
-                    }
-                });
+                        { _name, Array.Empty<string>() }
+                    },
+                ];
             }
         }
 

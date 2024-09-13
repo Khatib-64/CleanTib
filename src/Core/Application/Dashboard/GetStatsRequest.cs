@@ -3,9 +3,7 @@ using CleanTib.Application.Identity.Users;
 
 namespace CleanTib.Application.Dashboard;
 
-public class GetStatsRequest : IRequest<StatsDto>
-{
-}
+public class GetStatsRequest : IRequest<StatsDto>;
 
 public class GetStatsRequestHandler : IRequestHandler<GetStatsRequest, StatsDto>
 {

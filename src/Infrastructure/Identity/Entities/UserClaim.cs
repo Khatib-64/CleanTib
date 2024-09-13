@@ -2,6 +2,4 @@
 
 namespace CleanTib.Infrastructure.Identity.Entities;
 
-public class UserClaim : IdentityUserClaim<string>
-{
-}
+public class UserClaim : IdentityUserClaim<string>;

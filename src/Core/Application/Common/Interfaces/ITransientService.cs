@@ -1,5 +1,3 @@
 namespace CleanTib.Application.Common.Interfaces;
 
-public interface ITransientService
-{
-}
+public interface ITransientService;

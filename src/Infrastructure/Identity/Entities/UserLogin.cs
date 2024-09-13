@@ -2,6 +2,4 @@
 
 namespace CleanTib.Infrastructure.Identity.Entities;
 
-public class UserLogin : IdentityUserLogin<string>
-{
-}
+public class UserLogin : IdentityUserLogin<string>;

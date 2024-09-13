@@ -1,10 +1,8 @@
 ﻿namespace CleanTib.Application.Catalog.Brands;
 
-public class GetBrandRequest : IRequest<BrandDto>
+public class GetBrandRequest(Guid id) : IRequest<BrandDto>
 {
-    public Guid Id { get; set; }
-
-    public GetBrandRequest(Guid id) => Id = id;
+    public Guid Id { get; set; } = id;
 }
 
 public class BrandByIdSpec : Specification<Brand, BrandDto>

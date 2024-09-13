@@ -16,12 +16,12 @@ public class AuditTrail
     public EntityEntry Entry { get; }
     public Guid UserId { get; set; }
     public string? TableName { get; set; }
-    public Dictionary<string, object?> KeyValues { get; } = new();
-    public Dictionary<string, object?> OldValues { get; } = new();
-    public Dictionary<string, object?> NewValues { get; } = new();
-    public List<PropertyEntry> TemporaryProperties { get; } = new();
+    public Dictionary<string, object?> KeyValues { get; } = [];
+    public Dictionary<string, object?> OldValues { get; } = [];
+    public Dictionary<string, object?> NewValues { get; } = [];
+    public List<PropertyEntry> TemporaryProperties { get; } = [];
     public TrailType TrailType { get; set; }
-    public List<string> ChangedColumns { get; } = new();
+    public List<string> ChangedColumns { get; } = [];
     public bool HasTemporaryProperties => TemporaryProperties.Count > 0;
 
     public Trail ToAuditTrail() =>

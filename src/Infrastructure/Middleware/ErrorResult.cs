@@ -2,7 +2,7 @@
 
 public class ErrorResult
 {
-    public List<string> Messages { get; set; } = new();
+    public List<string> Messages { get; set; } = [];
 
     public string? Source { get; set; }
     public string? Exception { get; set; }

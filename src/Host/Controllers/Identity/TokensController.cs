@@ -26,7 +26,5 @@ public sealed class TokensController : VersionNeutralApiController
     }
 
     private string? GetIpAddress() =>
-        Request.Headers.ContainsKey("X-Forwarded-For")
-            ? Request.Headers["X-Forwarded-For"]
-            : HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "N/A";
+        Request.Headers.TryGetValue("X-Forwarded-For", out var value) ? value : HttpContext.Connection.RemoteIpAddress?.MapToIPv4().ToString() ?? "N/A";
 }

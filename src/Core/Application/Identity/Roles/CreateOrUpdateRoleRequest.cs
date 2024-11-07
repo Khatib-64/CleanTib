@@ -1,6 +1,6 @@
 namespace CleanTib.Application.Identity.Roles;
 
-public class CreateOrUpdateRoleRequest
+public class CreateOrUpdateRoleRequest : ICommand
 {
     public string? Id { get; set; }
     public string Name { get; set; } = default!;

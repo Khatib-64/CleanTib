@@ -1,6 +1,6 @@
 namespace CleanTib.Application.Identity.Tokens;
 
-public record TokenRequest(string Email, string Password);
+public record TokenRequest(string Email, string Password) : ICommand;
 
 public class TokenRequestValidator : CustomValidator<TokenRequest>
 {

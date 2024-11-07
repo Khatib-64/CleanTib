@@ -34,6 +34,7 @@ public static class Startup
         var applicationAssembly = typeof(CleanTib.Application.Startup).GetTypeInfo().Assembly;
         MapsterSettings.Configure();
         return services
+            .AddBehaviours()
             .AddApiVersioning()
             .AddAuth(config)
             .AddBackgroundJobs(config)

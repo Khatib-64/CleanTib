@@ -4,7 +4,6 @@ using CleanTib.Application.Common.Interfaces;
 using CleanTib.Domain.Common.Contracts;
 using CleanTib.Infrastructure.Auditing;
 using CleanTib.Infrastructure.Identity.Entities;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;

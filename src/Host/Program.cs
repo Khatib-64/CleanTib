@@ -6,7 +6,7 @@ using CleanTib.Infrastructure.Common;
 using CleanTib.Infrastructure.Logging.Serilog;
 using Serilog;
 
-[assembly: ApiConventionType(typeof(FSHApiConventions))]
+[assembly: ApiConventionType(typeof(CleanTibApiConventions))]
 
 StaticLogger.EnsureInitialized();
 Log.Information("Server Booting Up...");

@@ -6,7 +6,6 @@ using CleanTib.Infrastructure.Persistence.Context;
 using CleanTib.Infrastructure.Persistence.Initialization;
 using CleanTib.Infrastructure.Persistence.Repository;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;

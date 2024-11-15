@@ -1,3 +1,4 @@
+using MediatR;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using CleanTib.Infrastructure.Auth;
@@ -16,12 +17,12 @@ using CleanTib.Infrastructure.Persistence;
 using CleanTib.Infrastructure.Persistence.Initialization;
 using CleanTib.Infrastructure.SecurityHeaders;
 using CleanTib.Infrastructure.Validations;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using CleanTib.Infrastructure.Behaviors;
 
 [assembly: InternalsVisibleTo("Infrastructure.Test")]
 
@@ -31,26 +32,25 @@ public static class Startup
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration config)
     {
-        var applicationAssembly = typeof(CleanTib.Application.Startup).GetTypeInfo().Assembly;
+        var assembly = Assembly.GetAssembly(typeof(Application.Startup));
         MapsterSettings.Configure();
         return services
-            .AddBehaviours()
+            .AddRouting(options => options.LowercaseUrls = true)
             .AddApiVersioning()
             .AddAuth(config)
-            .AddBackgroundJobs(config)
-            .AddCaching(config)
             .AddCorsPolicy(config)
+            .AddMediatR(assembly!)
+            .AddRequestLogging(config)
             .AddExceptionMiddleware()
-            .AddBehaviours()
+            .AddPersistence()
+            .AddCaching(config)
+            .AddBackgroundJobs(config)
             .AddHealthCheck()
             .AddPOLocalization(config)
             .AddMailing(config)
-            .AddMediatR(Assembly.GetExecutingAssembly())
             .AddNotifications(config)
             .AddOpenApiDocumentation(config)
-            .AddPersistence()
-            .AddRequestLogging(config)
-            .AddRouting(options => options.LowercaseUrls = true)
+            .AddBehaviours()
             .AddServices();
     }
 

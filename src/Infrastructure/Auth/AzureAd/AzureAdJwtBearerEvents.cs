@@ -12,7 +12,9 @@ namespace CleanTib.Infrastructure.Auth.AzureAd;
 internal class AzureAdJwtBearerEvents : JwtBearerEvents
 {
     private readonly ILogger _logger;
+#pragma warning disable IDE0052 // Remove unread private members
     private readonly IConfiguration _config;
+#pragma warning restore IDE0052 // Remove unread private members
 
     public AzureAdJwtBearerEvents(ILogger logger, IConfiguration config) =>
         (_logger, _config) = (logger, config);

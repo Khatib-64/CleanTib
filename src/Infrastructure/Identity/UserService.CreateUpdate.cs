@@ -136,7 +136,7 @@ internal partial class UserService
                 Url = emailVerificationUri
             };
             var mailRequest = new MailRequest(
-                new List<string> { user.Email },
+                [user.Email],
                 _t["Confirm Registration"],
                 _templateService.GenerateEmailTemplate("email-confirmation", eMailModel));
             _jobService.Enqueue(() => _mailService.SendAsync(mailRequest, CancellationToken.None));

@@ -3,18 +3,18 @@ using CleanTib.Application.Common.Interfaces;
 using MediatR;
 using System.Reflection;
 
-namespace CleanTib.Application.Common.Behaviors;
+namespace CleanTib.Infrastructure.Behaviors;
 
 /// <summary>
-/// Specifies that the associated string property should not undergo trimming operations, 
+/// Specifies that the associated string property should not undergo trimming operations,
 /// preserving leading, trailing, and in-between whitespace as is.
 /// </summary>
 [AttributeUsage(AttributeTargets.Property)]
 public class DoNotTrimAttribute : Attribute;
 
 /// <summary>
-/// A pipeline behavior that trims leading and trailing whitespace from string properties 
-/// of the command and removes any duplicated whitespaces between words. 
+/// A pipeline behavior that trims leading and trailing whitespace from string properties
+/// of the command and removes any duplicated whitespaces between words.
 /// Skips properties that have the <see cref="DoNotTrimAttribute"/> attribute.
 /// </summary>
 /// <typeparam name="TCommand">The type of the command being handled.</typeparam>

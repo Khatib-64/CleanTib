@@ -1,4 +1,4 @@
-﻿using CleanTib.Application.Common.Behaviors;
+﻿using CleanTib.Application.Common.Interfaces;
 using CleanTib.Infrastructure.Behaviors;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;

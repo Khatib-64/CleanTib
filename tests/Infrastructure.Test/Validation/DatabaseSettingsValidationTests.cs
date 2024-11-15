@@ -20,7 +20,7 @@ public class DatabaseSettingsValidationTests
         var validationContext = new ValidationContext(settings);
 
         // Act
-        ICollection<ValidationResult> validationResults = new List<ValidationResult>();
+        ICollection<ValidationResult> validationResults = [];
         Validator.TryValidateObject(settings, validationContext, validationResults);
 
         // Assert
@@ -45,7 +45,7 @@ public class DatabaseSettingsValidationTests
         var validationContext = new ValidationContext(settings);
 
         // Act
-        ICollection<ValidationResult> validationResults = new List<ValidationResult>();
+        ICollection<ValidationResult> validationResults = [];
         Validator.TryValidateObject(settings, validationContext, validationResults);
 
         // Assert
@@ -70,7 +70,7 @@ public class DatabaseSettingsValidationTests
         var validationContext = new ValidationContext(settings);
 
         // Act
-        ICollection<ValidationResult> validationResults = new List<ValidationResult>();
+        ICollection<ValidationResult> validationResults = [];
         Validator.TryValidateObject(settings, validationContext, validationResults, true);
 
         // Assert

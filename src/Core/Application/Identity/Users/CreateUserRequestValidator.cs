@@ -1,6 +1,6 @@
 namespace CleanTib.Application.Identity.Users;
 
-public class CreateUserRequestValidator : CustomValidator<CreateUserRequest>
+public class CreateUserRequestValidator : Validator<CreateUserRequest>
 {
     public CreateUserRequestValidator(IUserService userService, IStringLocalizer<CreateUserRequestValidator> T)
     {

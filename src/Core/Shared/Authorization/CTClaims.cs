@@ -1,6 +1,6 @@
 ﻿namespace CleanTib.Shared.Authorization;
 
-public static class FSHClaims
+public static class CTClaims
 {
     public const string Fullname = "fullName";
     public const string Permission = "permission";

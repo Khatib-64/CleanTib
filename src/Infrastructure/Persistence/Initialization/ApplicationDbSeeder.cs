@@ -33,7 +33,7 @@ internal class ApplicationDbSeeder
 
     private async Task SeedRolesAsync(ApplicationDbContext dbContext)
     {
-        foreach (string roleName in FSHRoles.DefaultRoles)
+        foreach (string roleName in CTRoles.DefaultRoles)
         {
             if (await _roleManager.Roles.SingleOrDefaultAsync(r => r.Name == roleName)
                 is not ApplicationRole role)
@@ -45,31 +45,32 @@ internal class ApplicationDbSeeder
             }
 
             // Assign permissions
-            if (roleName == FSHRoles.Basic)
+            if (roleName == CTRoles.Basic)
             {
-                await AssignPermissionsToRoleAsync(dbContext, FSHPermissions.Basic, role);
+                await AssignPermissionsToRoleAsync(dbContext, CTPermissions.Basic, role);
             }
-            else if (roleName == FSHRoles.Admin)
+            else if (roleName == CTRoles.Admin)
             {
-                await AssignPermissionsToRoleAsync(dbContext, FSHPermissions.Admin, role);
+                await AssignPermissionsToRoleAsync(dbContext, CTPermissions.Admin, role);
             }
         }
     }
 
-    private async Task AssignPermissionsToRoleAsync(ApplicationDbContext dbContext, IReadOnlyList<FSHPermission> permissions, ApplicationRole role)
+    private async Task AssignPermissionsToRoleAsync(ApplicationDbContext dbContext, IReadOnlyList<CTPermission> permissions, ApplicationRole role)
     {
         var currentClaims = await _roleManager.GetClaimsAsync(role);
         foreach (var permission in permissions)
         {
-            if (!currentClaims.Any(c => c.Type == FSHClaims.Permission && c.Value == permission.Name))
+            if (!currentClaims.Any(c => c.Type == CTClaims.Permission && c.Value == permission.Name))
             {
                 _logger.LogInformation("Seeding {role} Permission '{permission}'", role.Name, permission.Name);
                 dbContext.RoleClaims.Add(new RoleClaim
                 {
                     RoleId = role.Id,
-                    ClaimType = FSHClaims.Permission,
+                    ClaimType = CTClaims.Permission,
                     ClaimValue = permission.Name,
-                    CreatedBy = "ApplicationDbSeeder"
+                    CreatedBy = "ApplicationDbSeeder",
+                    CreatedOn = DateTime.UtcNow
                 });
                 await dbContext.SaveChangesAsync();
             }
@@ -81,11 +82,11 @@ internal class ApplicationDbSeeder
         if (await _userManager.Users.FirstOrDefaultAsync(u => u.Email == Root.EmailAddress)
             is not ApplicationUser adminUser)
         {
-            string adminUserName = $"{Root.Id.Trim()}.{FSHRoles.Admin}".ToLowerInvariant();
+            string adminUserName = $"{Root.Id.Trim()}.{CTRoles.Admin}".ToLowerInvariant();
             adminUser = new ApplicationUser
             {
                 FirstName = Root.Id.Trim().ToLowerInvariant(),
-                LastName = FSHRoles.Admin,
+                LastName = CTRoles.Admin,
                 Email = Root.EmailAddress,
                 UserName = adminUserName,
                 EmailConfirmed = true,
@@ -102,10 +103,10 @@ internal class ApplicationDbSeeder
         }
 
         // Assign role to user
-        if (!await _userManager.IsInRoleAsync(adminUser, FSHRoles.Admin))
+        if (!await _userManager.IsInRoleAsync(adminUser, CTRoles.Admin))
         {
             _logger.LogInformation("Assigning Admin Role to Admin User");
-            await _userManager.AddToRoleAsync(adminUser, FSHRoles.Admin);
+            await _userManager.AddToRoleAsync(adminUser, CTRoles.Admin);
         }
     }
 }

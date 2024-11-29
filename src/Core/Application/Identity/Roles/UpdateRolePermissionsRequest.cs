@@ -6,7 +6,7 @@ public class UpdateRolePermissionsRequest
     public List<string> Permissions { get; set; } = default!;
 }
 
-public class UpdateRolePermissionsRequestValidator : CustomValidator<UpdateRolePermissionsRequest>
+public class UpdateRolePermissionsRequestValidator : Validator<UpdateRolePermissionsRequest>
 {
     public UpdateRolePermissionsRequestValidator()
     {

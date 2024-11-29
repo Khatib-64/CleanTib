@@ -1,6 +1,6 @@
 namespace CleanTib.Application.Identity.Users;
 
-public class UpdateUserRequestValidator : CustomValidator<UpdateUserRequest>
+public class UpdateUserRequestValidator : Validator<UpdateUserRequest>
 {
     public UpdateUserRequestValidator(IUserService userService, IStringLocalizer<UpdateUserRequestValidator> T)
     {

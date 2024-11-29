@@ -2,7 +2,7 @@ namespace CleanTib.Application.Identity.Tokens;
 
 public record TokenRequest(string Email, string Password) : ICommand;
 
-public class TokenRequestValidator : CustomValidator<TokenRequest>
+public class TokenRequestValidator : Validator<TokenRequest>
 {
     public TokenRequestValidator(IStringLocalizer<TokenRequestValidator> T)
     {

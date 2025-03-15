@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+﻿using CleanTib.Application.Common.Extensions;
+using CleanTib.Domain.Attributes;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq.Expressions;
 using System.Reflection;
-using System.Text.Json;
 
 namespace CleanTib.Application.Common.Specification;
 
@@ -16,64 +18,94 @@ public static class SpecificationBuilderExtensions
     public static ISpecificationBuilder<T> PaginateBy<T>(this ISpecificationBuilder<T> query, PaginationFilter filter)
     {
         if (filter.PageNumber <= 0)
-        {
             filter.PageNumber = 1;
-        }
 
         if (filter.PageSize <= 0)
         {
-            filter.PageSize = 10;
+            if (!filter.GetAllRecords)
+                filter.PageSize = 10;
+            else
+                filter.PageSize = int.MaxValue;
         }
 
         if (filter.PageNumber > 1)
-        {
             query = query.Skip((filter.PageNumber - 1) * filter.PageSize);
-        }
 
         return query
             .Take(filter.PageSize)
             .OrderBy(filter.OrderBy);
     }
 
-    public static IOrderedSpecificationBuilder<T> SearchByKeyword<T>(
-        this ISpecificationBuilder<T> specificationBuilder,
-        string? keyword) =>
+    public static IOrderedSpecificationBuilder<T> SearchByKeyword<T>(this ISpecificationBuilder<T> specificationBuilder, string? keyword) =>
         specificationBuilder.AdvancedSearch(new Search { Keyword = keyword });
 
-    public static IOrderedSpecificationBuilder<T> AdvancedSearch<T>(
-        this ISpecificationBuilder<T> specificationBuilder,
-        Search? search)
+    public static IOrderedSpecificationBuilder<T> AdvancedSearch<T>(this ISpecificationBuilder<T> specificationBuilder, Search? search)
     {
-        if (!string.IsNullOrEmpty(search?.Keyword))
+        if (string.IsNullOrEmpty(search?.Keyword))
+            return new OrderedSpecificationBuilder<T>(specificationBuilder.Specification);
+
+        if (search.Fields?.Any() is true)
+            return SearchOverSelectedProperties(specificationBuilder, search);
+
+        var deepSearchAttribute = typeof(T).GetCustomAttribute<ClassSupportDeepSearchAttribute>();
+
+        if (deepSearchAttribute == null)
+            SearchOnlyInBasePrimitiveProperties(specificationBuilder, search);
+
+        if (deepSearchAttribute != null)
+            SearchInDeepNestedProperties(specificationBuilder, search, deepSearchAttribute.Depth);
+
+        return new OrderedSpecificationBuilder<T>(specificationBuilder.Specification);
+    }
+
+    private static OrderedSpecificationBuilder<T> SearchOverSelectedProperties<T>(ISpecificationBuilder<T> specificationBuilder, Search? search)
+    {
+        // Search selected fields (can contain deeper nested fields)
+        foreach (string field in search.Fields)
         {
-            if (search.Fields?.Any() is true)
-            {
-                // search seleted fields (can contain deeper nested fields)
-                foreach (string field in search.Fields)
-                {
-                    var paramExpr = Expression.Parameter(typeof(T));
-                    MemberExpression propertyExpr = GetPropertyExpression(field, paramExpr);
+            var paramExpr = Expression.Parameter(typeof(T));
+            MemberExpression propertyExpr = ExpressionExtensions.GetPropertyExpression(field, paramExpr);
 
-                    specificationBuilder.AddSearchPropertyByKeyword(propertyExpr, paramExpr, search.Keyword);
-                }
-            }
-            else
-            {
-                // search all fields (only first level)
-                foreach (var property in typeof(T).GetProperties()
-                    .Where(prop => (Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType) is { } propertyType
-                        && !propertyType.IsEnum
-                        && Type.GetTypeCode(propertyType) != TypeCode.Object))
-                {
-                    var paramExpr = Expression.Parameter(typeof(T));
-                    var propertyExpr = Expression.Property(paramExpr, property);
-
-                    specificationBuilder.AddSearchPropertyByKeyword(propertyExpr, paramExpr, search.Keyword);
-                }
-            }
+            specificationBuilder.AddSearchPropertyByKeyword(propertyExpr, paramExpr, search.Keyword);
         }
 
         return new OrderedSpecificationBuilder<T>(specificationBuilder.Specification);
+    }
+
+    private static void SearchOnlyInBasePrimitiveProperties<T>(ISpecificationBuilder<T> specificationBuilder, Search? search)
+    {
+        var props = typeof(T).GetProperties()
+            .Where(prop => (Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType) is { } propertyType
+                && !propertyType.IsEnum
+                && Type.GetTypeCode(propertyType) != TypeCode.Object)
+            .Where(p => p.GetCustomAttribute<NotMappedAttribute>() == null);
+
+        foreach (var property in props)
+        {
+            var paramExpr = Expression.Parameter(typeof(T));
+            var propertyExpr = Expression.Property(paramExpr, property);
+            specificationBuilder.AddSearchPropertyByKeyword(propertyExpr, paramExpr, search?.Keyword!);
+        }
+    }
+
+    private static void SearchInDeepNestedProperties<T>(ISpecificationBuilder<T> specificationBuilder, Search? search, uint depth)
+    {
+        var props = typeof(T).GetProperties()
+            .Where(prop => (Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType) is { } propertyType
+                && !propertyType.IsEnum
+                && !prop.GetCustomAttributes<NotMappedAttribute>(false).Any()
+                && prop.GetCustomAttribute<ColumnSupportDeepSearchAttribute>(false) != null);
+
+        foreach (var property in props)
+        {
+            var paramExpr = Expression.Parameter(typeof(T));
+            var propertyExpr = Expression.Property(paramExpr, property);
+
+            if (property.PropertyType.IsOfType<string>())
+                specificationBuilder.AddSearchPropertyByKeyword(propertyExpr, paramExpr, search?.Keyword!);
+            else if (depth != 0)
+                ChildPropertyDepthFilter(property, propertyExpr, paramExpr, specificationBuilder, search?.Keyword!, depth);
+        }
     }
 
     private static void AddSearchPropertyByKeyword<T>(
@@ -84,9 +116,7 @@ public static class SpecificationBuilderExtensions
         string operatorSearch = FilterOperator.CONTAINS)
     {
         if (propertyExpr is not MemberExpression memberExpr || memberExpr.Member is not PropertyInfo property)
-        {
             throw new ArgumentException("propertyExpr must be a property expression.", nameof(propertyExpr));
-        }
 
         string searchTerm = operatorSearch switch
         {
@@ -115,214 +145,83 @@ public static class SpecificationBuilderExtensions
             .Add(new SearchExpressionInfo<T>(selector, searchTerm, 1));
     }
 
-    public static IOrderedSpecificationBuilder<T> AdvancedFilter<T>(
-        this ISpecificationBuilder<T> specificationBuilder,
-        Filter? filter)
+    public static IOrderedSpecificationBuilder<T> AdvancedFilter<T>(this ISpecificationBuilder<T> specificationBuilder, Filter? filter)
     {
-        if (filter is not null)
+        if (filter is null)
+            return new OrderedSpecificationBuilder<T>(specificationBuilder.Specification);
+
+        var parameter = Expression.Parameter(typeof(T));
+
+        Expression binaryExpressionFilter;
+
+        if (!string.IsNullOrEmpty(filter.Logic))
         {
-            var parameter = Expression.Parameter(typeof(T));
-
-            Expression binaryExpresioFilter;
-
-            if (!string.IsNullOrEmpty(filter.Logic))
-            {
-                if (filter.Filters is null) throw new CustomException("The Filters attribute is required when declaring a logic");
-                binaryExpresioFilter = CreateFilterExpression(filter.Logic, filter.Filters, parameter);
-            }
-            else
-            {
-                var filterValid = GetValidFilter(filter);
-                binaryExpresioFilter = CreateFilterExpression(filterValid.Field!, filterValid.Operator!, filterValid.Value, parameter);
-            }
-
-            ((List<WhereExpressionInfo<T>>)specificationBuilder.Specification.WhereExpressions)
-                .Add(new WhereExpressionInfo<T>(Expression.Lambda<Func<T, bool>>(binaryExpresioFilter, parameter)));
+            if (filter.Filters is null) throw new CustomException("The Filters attribute is required when declaring a logic");
+            binaryExpressionFilter = ExpressionExtensions.CreateFilterExpression(filter.Logic, filter.Filters, parameter);
         }
+        else
+        {
+            var filterValid = BaseFilterExtensions.GetValidFilter(filter);
+            binaryExpressionFilter = ExpressionExtensions.CreateFilterExpression(filterValid.Field!, filterValid.Operator!, filterValid.Value, parameter);
+        }
+
+        ((List<WhereExpressionInfo<T>>)specificationBuilder.Specification.WhereExpressions)
+            .Add(new WhereExpressionInfo<T>(Expression.Lambda<Func<T, bool>>(binaryExpressionFilter, parameter)));
 
         return new OrderedSpecificationBuilder<T>(specificationBuilder.Specification);
     }
 
-    private static Expression CreateFilterExpression(
-        string logic,
-        IEnumerable<Filter> filters,
-        ParameterExpression parameter)
+    public static void ChildPropertyDepthFilter<T>(
+        PropertyInfo childProperty,
+        MemberExpression parentExpr,
+        ParameterExpression parentParam,
+        ISpecificationBuilder<T> specificationBuilder,
+        string keyword,
+        uint depth)
     {
-        Expression filterExpression = default!;
+        if (depth == 0) return;
 
-        foreach (var filter in filters)
+        var childType = childProperty.PropertyType;
+        var deepSearchAttribute = childType.GetCustomAttribute<ClassSupportDeepSearchAttribute>();
+
+        if (deepSearchAttribute == null) return;
+
+        var nestedProps = childType.GetProperties()
+            .Where(prop => (Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType) is { } propertyType
+            && !propertyType.IsEnum
+            && !prop.GetCustomAttributes<NotMappedAttribute>(false).Any()
+            && prop.GetCustomAttribute<ColumnSupportDeepSearchAttribute>(false) != null);
+
+        foreach (var nestedProp in nestedProps)
         {
-            Expression bExpresionFilter;
+            var nestedPropertyExpr = Expression.Property(parentExpr, nestedProp);
 
-            if (!string.IsNullOrEmpty(filter.Logic))
-            {
-                if (filter.Filters is null) throw new CustomException("The Filters attribute is required when declaring a logic");
-                bExpresionFilter = CreateFilterExpression(filter.Logic, filter.Filters, parameter);
-            }
+            if (nestedProp.PropertyType.IsOfType<string>())
+                specificationBuilder.AddSearchPropertyByKeyword(nestedPropertyExpr, parentParam, keyword);
             else
-            {
-                var filterValid = GetValidFilter(filter);
-                bExpresionFilter = CreateFilterExpression(filterValid.Field!, filterValid.Operator!, filterValid.Value, parameter);
-            }
-
-            filterExpression = filterExpression is null ? bExpresionFilter : CombineFilter(logic, filterExpression, bExpresionFilter);
+                ChildPropertyDepthFilter(nestedProp, nestedPropertyExpr, parentParam, specificationBuilder, keyword, depth - 1);
         }
-
-        return filterExpression;
     }
 
-    private static Expression CreateFilterExpression(
-        string field,
-        string filterOperator,
-        object? value,
-        ParameterExpression parameter)
+    public static IOrderedSpecificationBuilder<T> OrderBy<T>(this ISpecificationBuilder<T> specificationBuilder, string[]? orderByFields)
     {
-        var propertyExpresion = GetPropertyExpression(field, parameter);
-        var valueExpresion = GeValuetExpression(field, value, propertyExpresion.Type);
-        return CreateFilterExpression(propertyExpresion, valueExpresion, filterOperator);
-    }
+        if (orderByFields is null)
+            return new OrderedSpecificationBuilder<T>(specificationBuilder.Specification);
 
-    private static Expression CreateFilterExpression(
-        Expression memberExpression,
-        Expression constantExpression,
-        string filterOperator)
-    {
-        if (memberExpression.Type == typeof(string))
+        foreach (var field in ParseOrderBy(orderByFields))
         {
-            constantExpression = Expression.Call(constantExpression, "ToLower", null);
-            memberExpression = Expression.Call(memberExpression, "ToLower", null);
-        }
+            var paramExpr = Expression.Parameter(typeof(T));
 
-        return filterOperator switch
-        {
-            FilterOperator.EQ => Expression.Equal(memberExpression, constantExpression),
-            FilterOperator.NEQ => Expression.NotEqual(memberExpression, constantExpression),
-            FilterOperator.LT => Expression.LessThan(memberExpression, constantExpression),
-            FilterOperator.LTE => Expression.LessThanOrEqual(memberExpression, constantExpression),
-            FilterOperator.GT => Expression.GreaterThan(memberExpression, constantExpression),
-            FilterOperator.GTE => Expression.GreaterThanOrEqual(memberExpression, constantExpression),
-            FilterOperator.CONTAINS => Expression.Call(memberExpression, "Contains", null, constantExpression),
-            FilterOperator.STARTSWITH => Expression.Call(memberExpression, "StartsWith", null, constantExpression),
-            FilterOperator.ENDSWITH => Expression.Call(memberExpression, "EndsWith", null, constantExpression),
-            _ => throw new CustomException("Filter Operator is not valid."),
-        };
-    }
+            Expression propertyExpr = paramExpr;
+            foreach (string member in field.Key.Split('.'))
+                propertyExpr = Expression.PropertyOrField(propertyExpr, member);
 
-    private static Expression CombineFilter(
-        string filterOperator,
-        Expression bExpresionBase,
-        Expression bExpresion) => filterOperator switch
-        {
-            FilterLogic.AND => Expression.And(bExpresionBase, bExpresion),
-            FilterLogic.OR => Expression.Or(bExpresionBase, bExpresion),
-            FilterLogic.XOR => Expression.ExclusiveOr(bExpresionBase, bExpresion),
-            _ => throw new ArgumentException("FilterLogic is not valid."),
-        };
+            var keySelector = Expression.Lambda<Func<T, object?>>(
+                Expression.Convert(propertyExpr, typeof(object)),
+                paramExpr);
 
-    private static MemberExpression GetPropertyExpression(
-        string propertyName,
-        ParameterExpression parameter)
-    {
-        Expression propertyExpression = parameter;
-        foreach (string member in propertyName.Split('.'))
-        {
-            propertyExpression = Expression.PropertyOrField(propertyExpression, member);
-        }
-
-        return (MemberExpression)propertyExpression;
-    }
-
-    private static string GetStringFromJsonElement(object value)
-        => ((JsonElement)value).GetString()!;
-
-    private static ConstantExpression GeValuetExpression(
-        string field,
-        object? value,
-        Type propertyType)
-    {
-        if (value == null) return Expression.Constant(null, propertyType);
-
-        if (propertyType.IsEnum)
-        {
-            string? stringEnum = GetStringFromJsonElement(value);
-
-            if (!Enum.TryParse(propertyType, stringEnum, true, out object? valueparsed)) throw new CustomException(string.Format("Value {0} is not valid for {1}", value, field));
-
-            return Expression.Constant(valueparsed, propertyType);
-        }
-
-        if (propertyType == typeof(Guid))
-        {
-            string? stringGuid = GetStringFromJsonElement(value);
-
-            if (!Guid.TryParse(stringGuid, out Guid valueparsed)) throw new CustomException(string.Format("Value {0} is not valid for {1}", value, field));
-
-            return Expression.Constant(valueparsed, propertyType);
-        }
-
-        if (propertyType == typeof(string))
-        {
-            string? text = GetStringFromJsonElement(value);
-
-            return Expression.Constant(text, propertyType);
-        }
-
-        if (propertyType == typeof(DateTime) || propertyType == typeof(DateTime?))
-        {
-            string? text = GetStringFromJsonElement(value);
-            return Expression.Constant(ChangeType(text, propertyType), propertyType);
-        }
-
-        return Expression.Constant(ChangeType(((JsonElement)value).GetRawText(), propertyType), propertyType);
-    }
-
-    public static dynamic? ChangeType(object value, Type conversion)
-    {
-        var t = conversion;
-
-        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
-        {
-            if (value == null)
-            {
-                return null;
-            }
-
-            t = Nullable.GetUnderlyingType(t);
-        }
-
-        return Convert.ChangeType(value, t!);
-    }
-
-    private static Filter GetValidFilter(Filter filter)
-    {
-        if (string.IsNullOrEmpty(filter.Field)) throw new CustomException("The field attribute is required when declaring a filter");
-        if (string.IsNullOrEmpty(filter.Operator)) throw new CustomException("The Operator attribute is required when declaring a filter");
-        return filter;
-    }
-
-    public static IOrderedSpecificationBuilder<T> OrderBy<T>(
-        this ISpecificationBuilder<T> specificationBuilder,
-        string[]? orderByFields)
-    {
-        if (orderByFields is not null)
-        {
-            foreach (var field in ParseOrderBy(orderByFields))
-            {
-                var paramExpr = Expression.Parameter(typeof(T));
-
-                Expression propertyExpr = paramExpr;
-                foreach (string member in field.Key.Split('.'))
-                {
-                    propertyExpr = Expression.PropertyOrField(propertyExpr, member);
-                }
-
-                var keySelector = Expression.Lambda<Func<T, object?>>(
-                    Expression.Convert(propertyExpr, typeof(object)),
-                    paramExpr);
-
-                ((List<OrderExpressionInfo<T>>)specificationBuilder.Specification.OrderExpressions)
-                    .Add(new OrderExpressionInfo<T>(keySelector, field.Value));
-            }
+            ((List<OrderExpressionInfo<T>>)specificationBuilder.Specification.OrderExpressions)
+                .Add(new OrderExpressionInfo<T>(keySelector, field.Value));
         }
 
         return new OrderedSpecificationBuilder<T>(specificationBuilder.Specification);

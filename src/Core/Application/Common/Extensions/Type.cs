@@ -7,8 +7,23 @@ public static class TypeExtensions
         if (type == typeof(T))
             return true;
 
-        var underlayingType = Nullable.GetUnderlyingType(type);
+        return Nullable.GetUnderlyingType(type) == typeof(T);
+    }
 
-        return underlayingType == typeof(T);
+    public static dynamic? ChangeType(object value, Type conversion)
+    {
+        var t = conversion;
+
+        if (t.IsGenericType && t.GetGenericTypeDefinition().Equals(typeof(Nullable<>)))
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            t = Nullable.GetUnderlyingType(t);
+        }
+
+        return Convert.ChangeType(value, t!);
     }
 }

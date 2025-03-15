@@ -12,3 +12,4 @@ public class Brand(string name, string? description) : AuditableEntity, IAggrega
         return this;
     }
 }
+

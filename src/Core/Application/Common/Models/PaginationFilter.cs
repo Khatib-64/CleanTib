@@ -7,6 +7,8 @@ public class PaginationFilter : BaseFilter
     public int PageSize { get; set; } = int.MaxValue;
 
     public string[]? OrderBy { get; set; }
+
+    public bool GetAllRecords { get; set; }
 }
 
 public static class PaginationFilterExtensions

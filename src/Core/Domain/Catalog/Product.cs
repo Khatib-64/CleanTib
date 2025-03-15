@@ -1,5 +1,8 @@
+using CleanTib.Domain.Attributes;
+
 namespace CleanTib.Domain.Catalog;
 
+[ClassSupportDeepSearch]
 public class Product : AuditableEntity, IAggregateRoot
 {
     public string Name { get; private set; } = default!;
@@ -7,6 +10,7 @@ public class Product : AuditableEntity, IAggregateRoot
     public decimal Rate { get; private set; }
     public string? ImagePath { get; private set; }
     public Guid BrandId { get; private set; }
+    [ColumnSupportDeepSearch]
     public virtual Brand Brand { get; private set; } = default!;
 
     public Product()

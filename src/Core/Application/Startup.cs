@@ -1,5 +1,6 @@
 using System.Reflection;
 using CleanTib.Application.Demo;
+using CleanTib.Application.Identity.Roles;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CleanTib.Application;
@@ -12,6 +13,6 @@ public static class Startup
 
         return services
             .AddValidatorsFromAssembly(assembly)
-            .AddMediatR(typeof(DemooCommandHandler).GetTypeInfo().Assembly);
+            .AddMediatR(typeof(UpdateRolePermissionsRequest).GetTypeInfo().Assembly);
     }
 }

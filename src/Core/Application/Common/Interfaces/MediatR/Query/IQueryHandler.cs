@@ -1,7 +1,7 @@
 ﻿namespace CleanTib.Application.Common.Interfaces;
 
 public interface IQueryHandler<in TQuery, TResponse>
-    where TQuery : ICommand<TResponse>
+    where TQuery : IQuery<TResponse>
 {
     /// <summary>
     /// Handles a query.

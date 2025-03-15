@@ -1,26 +1,35 @@
 ﻿namespace CleanTib.Application.Demo;
 
-public class DemooCommand : ICommand<string>
-{
-    public string? TestStringTrim { get; set; }
-}
+public class SearchBrandsRequest : PaginationFilter, ICommand<PaginationResponse<BrandDto>>
+{ }
 
-public class DemooCommandValidator : AbstractValidator<DemooCommand>
+
+public class SearchBrandsRequestHandler : ICommandHandler<SearchBrandsRequest, PaginationResponse<BrandDto>>
 {
-    public DemooCommandValidator()
+    private readonly IReadRepository<Brand> _repo;
+
+    public SearchBrandsRequestHandler(IReadRepository<Brand> repo)
     {
-        RuleFor(x => x.TestStringTrim)
-            .NotEmpty()
-            .NotNull()
-            .WithMessage("TestStringTrim must not be null");
+        _repo = repo;
     }
 
+    public async Task<PaginationResponse<BrandDto>> Handle(SearchBrandsRequest request, CancellationToken cancellationToken)
+    {
+        var spec = new BrandsBySearchRequestSpec(request);
+
+        return await _repo.PaginatedListAsync(spec, request.PageNumber, request.PageSize, cancellationToken);
+    }
 }
 
-public class DemooCommandHandler : ICommandHandler<DemooCommand, string>
+public class BrandsBySearchRequestSpec : EntitiesByPaginationFilterSpec<Brand, BrandDto>
 {
-    public async Task<string> Handle(DemooCommand command, CancellationToken cancellationToken)
-    {
-        return await Task.FromResult(command.TestStringTrim);
-    }
+    public BrandsBySearchRequestSpec(SearchBrandsRequest request)
+        : base(request) =>
+        Query.OrderBy(c => c.Name, !request.HasOrderBy());
+}
+
+public class BrandDto : IDto
+{
+    public string? Name { get; set; }
+    public string? Description { get; set; }
 }

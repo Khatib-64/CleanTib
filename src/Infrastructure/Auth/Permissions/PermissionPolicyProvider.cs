@@ -15,16 +15,17 @@ internal class PermissionPolicyProvider : IAuthorizationPolicyProvider
 
     public Task<AuthorizationPolicy> GetDefaultPolicyAsync() => FallbackPolicyProvider.GetDefaultPolicyAsync();
 
-    public Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
+    // TODO: It was non async, I made it
+    public async Task<AuthorizationPolicy?> GetPolicyAsync(string policyName)
     {
         if (policyName.StartsWith(CTClaims.Permission, StringComparison.OrdinalIgnoreCase))
         {
             var policy = new AuthorizationPolicyBuilder();
             policy.AddRequirements(new PermissionRequirement(policyName));
-            return Task.FromResult<AuthorizationPolicy?>(policy.Build());
+            return await Task.FromResult<AuthorizationPolicy?>(policy.Build());
         }
 
-        return FallbackPolicyProvider.GetPolicyAsync(policyName);
+        return await FallbackPolicyProvider.GetPolicyAsync(policyName);
     }
 
     public Task<AuthorizationPolicy?> GetFallbackPolicyAsync() => Task.FromResult<AuthorizationPolicy?>(null);

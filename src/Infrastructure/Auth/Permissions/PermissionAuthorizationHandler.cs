@@ -15,8 +15,6 @@ internal class PermissionAuthorizationHandler : AuthorizationHandler<PermissionR
     {
         if (context.User?.GetUserId() is { } userId &&
             await _userService.HasPermissionAsync(userId, requirement.Permission))
-        {
             context.Succeed(requirement);
-        }
     }
 }

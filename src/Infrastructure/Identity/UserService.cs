@@ -126,9 +126,7 @@ internal partial class UserService : IUserService
 
         bool isAdmin = await _userManager.IsInRoleAsync(user, CTRoles.Admin);
         if (isAdmin)
-        {
             throw new ConflictException(_t["Administrators Profile's Status cannot be toggled"]);
-        }
 
         user.IsActive = request.ActivateUser;
 
